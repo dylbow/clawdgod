@@ -202,66 +202,96 @@ function initWealthTracker() {
     setInterval(updateWealth, REFRESH_INTERVAL);
 }
 
-// === P&L CHART (mini sparkline) ===
-function initPnLChart() {
-    const canvas = $('pnl-chart');
+// === SPARKLINE CHART ENGINE ===
+function drawSparkline(canvasId, data, options = {}) {
+    const canvas = $(canvasId);
     if (!canvas) return;
     
     const ctx = canvas.getContext('2d');
     const w = canvas.width = canvas.offsetWidth;
     const h = canvas.height = canvas.offsetHeight;
     
-    // Simulated daily P&L data (will be real once we track trades over time)
-    const pnl = [0, -0.82, -0.60, -0.40, 0.50, 1.20, 0.80, 1.50, 2.28, 2.50];
-    const max = Math.max(...pnl.map(Math.abs), 1);
-    const midY = h / 2;
+    const color = options.color || '#00d68f';
+    const colorDim = options.colorDim || 'rgba(0, 214, 143, 0.1)';
+    const hasZeroLine = options.zeroline !== false;
+    const min = options.min !== undefined ? options.min : Math.min(...data);
+    const max = options.max !== undefined ? options.max : Math.max(...data);
+    const range = Math.max(max - min, 1);
+    const padding = h * 0.1;
     
-    // Background grid
-    ctx.strokeStyle = 'rgba(255,255,255,0.05)';
-    ctx.lineWidth = 1;
-    ctx.beginPath();
-    ctx.moveTo(0, midY); ctx.lineTo(w, midY);
-    ctx.stroke();
+    // Zero line for P&L charts
+    if (hasZeroLine && min < 0) {
+        const zeroY = h - padding - ((0 - min) / range) * (h - padding * 2);
+        ctx.strokeStyle = 'rgba(255,255,255,0.05)';
+        ctx.lineWidth = 1;
+        ctx.setLineDash([4, 4]);
+        ctx.beginPath();
+        ctx.moveTo(0, zeroY);
+        ctx.lineTo(w, zeroY);
+        ctx.stroke();
+        ctx.setLineDash([]);
+    }
     
-    // P&L line
-    const gradient = ctx.createLinearGradient(0, 0, 0, h);
-    gradient.addColorStop(0, 'rgba(0, 214, 143, 0.8)');
-    gradient.addColorStop(0.5, 'rgba(108, 92, 231, 0.8)');
-    gradient.addColorStop(1, 'rgba(255, 71, 87, 0.8)');
+    // Line
+    const gradient = ctx.createLinearGradient(0, 0, w, 0);
+    gradient.addColorStop(0, color.replace(')', ', 0.4)').replace('rgb', 'rgba'));
+    gradient.addColorStop(1, color);
     
     ctx.strokeStyle = gradient;
     ctx.lineWidth = 2;
     ctx.lineJoin = 'round';
+    ctx.lineCap = 'round';
     ctx.beginPath();
     
-    pnl.forEach((val, i) => {
-        const x = (i / (pnl.length - 1)) * w;
-        const y = midY - (val / max) * (h * 0.4);
+    data.forEach((val, i) => {
+        const x = data.length === 1 ? w / 2 : (i / (data.length - 1)) * w;
+        const y = h - padding - ((val - min) / range) * (h - padding * 2);
         if (i === 0) ctx.moveTo(x, y);
         else ctx.lineTo(x, y);
     });
     ctx.stroke();
     
-    // Fill under
-    const lastX = w;
-    const lastY = midY - (pnl[pnl.length-1] / max) * (h * 0.4);
-    ctx.lineTo(lastX, midY);
-    ctx.lineTo(0, midY);
+    // Fill
+    const lastX = data.length === 1 ? w / 2 : w;
+    const lastY = h - padding - ((data[data.length - 1] - min) / range) * (h - padding * 2);
+    ctx.lineTo(lastX, h);
+    ctx.lineTo(0, h);
     ctx.closePath();
-    const fillGradient = ctx.createLinearGradient(0, 0, 0, h);
-    fillGradient.addColorStop(0, 'rgba(0, 214, 143, 0.1)');
-    fillGradient.addColorStop(1, 'rgba(0, 214, 143, 0)');
-    ctx.fillStyle = fillGradient;
+    ctx.fillStyle = colorDim;
     ctx.fill();
     
-    // Current value dot
+    // Dot on current value
     ctx.beginPath();
-    ctx.arc(lastX, lastY, 4, 0, Math.PI * 2);
-    ctx.fillStyle = '#00d68f';
+    ctx.arc(lastX, lastY, 3, 0, Math.PI * 2);
+    ctx.fillStyle = color;
     ctx.fill();
-    ctx.strokeStyle = 'rgba(0, 214, 143, 0.3)';
-    ctx.lineWidth = 8;
+    ctx.strokeStyle = color.replace(')', ', 0.3)').replace('rgb', 'rgba');
+    ctx.lineWidth = 6;
     ctx.stroke();
+}
+
+function initAllCharts() {
+    // Total revenue trend (Empyre Tracker - top)
+    drawSparkline('total-chart', [0, 0, 0, 0.50, 0.51, 0.51], {
+        color: 'rgb(108, 92, 231)',
+        colorDim: 'rgba(108, 92, 231, 0.1)',
+        min: -1
+    });
+    
+    // Kalshi P&L trend
+    drawSparkline('kalshi-chart', [0, -0.82, -0.60, -0.40, 0.10, 0.51], {
+        color: 'rgb(0, 214, 143)',
+        colorDim: 'rgba(0, 214, 143, 0.08)',
+        min: -1
+    });
+    
+    // YouTube views trend (daily views, simulated from what we know)
+    drawSparkline('yt-chart', [50, 80, 120, 200, 350, 500, 600, 942], {
+        color: 'rgb(255, 71, 87)',
+        colorDim: 'rgba(255, 71, 87, 0.08)',
+        zeroline: false,
+        min: 0
+    });
 }
 
 // === ROI TRACKER ===
@@ -437,7 +467,7 @@ async function init() {
     initWealthTracker();
     initROI();
     initDragDrop();
-    setTimeout(initPnLChart, 500);
+    setTimeout(initAllCharts, 500);
     
     // Auto-refresh
     setInterval(fetchKalshi, 30000);   // 30 sec
