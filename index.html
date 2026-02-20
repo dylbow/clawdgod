@@ -277,6 +277,33 @@
         </div>
     </div>
 
+    <!-- ROI Tracker (corner widget) -->
+    <div class="roi-widget" id="roi-widget">
+        <div class="roi-header">
+            <span class="roi-title">💸 DYLBOT ROI</span>
+            <span class="roi-toggle" id="roi-toggle">▼</span>
+        </div>
+        <div class="roi-body" id="roi-body">
+            <div class="roi-row costs">
+                <span class="roi-label">TOTAL INVESTED</span>
+                <span class="roi-value" id="roi-costs">—</span>
+            </div>
+            <div class="roi-row revenue">
+                <span class="roi-label">TOTAL EARNED</span>
+                <span class="roi-value" id="roi-revenue">—</span>
+            </div>
+            <div class="roi-divider"></div>
+            <div class="roi-row net">
+                <span class="roi-label" id="roi-net-label">NET</span>
+                <span class="roi-value" id="roi-net">—</span>
+            </div>
+            <div class="roi-bar-container">
+                <div class="roi-bar" id="roi-bar"></div>
+            </div>
+            <div class="roi-breakdown" id="roi-breakdown"></div>
+        </div>
+    </div>
+
     <script src="app.js"></script>
 </body>
 </html>

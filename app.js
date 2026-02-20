@@ -256,6 +256,51 @@ function initPnLChart() {
     ctx.stroke();
 }
 
+// === ROI TRACKER ===
+async function initROI() {
+    try {
+        const res = await fetch(API_BASE + '/api/roi');
+        const data = await res.json();
+        
+        const costsEl = $('roi-costs');
+        const revEl = $('roi-revenue');
+        const netEl = $('roi-net');
+        const netLabel = $('roi-net-label');
+        const bar = $('roi-bar');
+        const breakdown = $('roi-breakdown');
+        
+        if (!costsEl) return;
+        
+        costsEl.textContent = '-' + fmt(data.totalCosts);
+        revEl.textContent = '+' + fmt(data.totalRevenue);
+        
+        const net = data.totalRevenue - data.totalCosts;
+        netEl.textContent = (net >= 0 ? '+' : '') + fmt(net);
+        netEl.className = 'roi-value ' + (net >= 0 ? 'positive' : 'negative');
+        netLabel.textContent = net >= 0 ? '🟢 PROFIT' : '🔴 TO BREAK EVEN';
+        
+        // Progress bar (0% = no revenue, 100% = break even)
+        const pct = data.totalCosts > 0 ? Math.min((data.totalRevenue / data.totalCosts) * 100, 100) : 0;
+        bar.style.width = pct + '%';
+        
+        // Cost breakdown
+        let html = '<div style="margin-top:6px">';
+        for (const [cat, amount] of Object.entries(data.costBreakdown)) {
+            html += `<div class="breakdown-item"><span class="breakdown-label">${cat}</span><span class="breakdown-value">$${amount.toFixed(0)}</span></div>`;
+        }
+        html += '</div>';
+        breakdown.innerHTML = html;
+        
+        // Toggle collapse
+        const toggle = $('roi-toggle');
+        const widget = $('roi-widget');
+        $('roi-header').onclick = () => widget.classList.toggle('collapsed');
+        
+    } catch(e) {
+        console.error('ROI fetch error:', e);
+    }
+}
+
 // === INIT ===
 async function init() {
     console.log('⚡ ClawdGod Command Center — Live Mode');
@@ -265,6 +310,7 @@ async function init() {
     
     // Initialize special features
     initWealthTracker();
+    initROI();
     setTimeout(initPnLChart, 500);
     
     // Auto-refresh

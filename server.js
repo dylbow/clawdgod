@@ -165,6 +165,62 @@ async function handleAPI(pathname, res) {
             res.writeHead(200, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' });
             res.end(JSON.stringify(ytData));
 
+        } else if (pathname === '/api/roi') {
+            let roiData = {};
+            try {
+                roiData = JSON.parse(fs.readFileSync(path.join(__dirname, 'roi-data.json'), 'utf8'));
+            } catch(e) {}
+            
+            // Calculate totals
+            let totalCosts = 0;
+            const costBreakdown = {};
+            
+            const now = new Date();
+            const startDate = new Date('2026-02-01');
+            const monthsActive = Math.max(1, (now - startDate) / (30 * 86400000));
+            
+            // Hardware (one-time)
+            for (const item of (roiData.costs?.hardware || [])) {
+                totalCosts += item.amount;
+                costBreakdown['Hardware'] = (costBreakdown['Hardware'] || 0) + item.amount;
+            }
+            
+            // Subscriptions (monthly, calculate total paid so far)
+            for (const item of (roiData.costs?.subscriptions || [])) {
+                if (item.recurring === 'monthly') {
+                    const subStart = new Date(item.date);
+                    const monthsPaid = Math.ceil(Math.max(1, (now - subStart) / (30 * 86400000)));
+                    const total = item.amount * monthsPaid;
+                    totalCosts += total;
+                    costBreakdown['Subscriptions'] = (costBreakdown['Subscriptions'] || 0) + total;
+                }
+            }
+            
+            // API credits (one-time)
+            for (const item of (roiData.costs?.api_credits || [])) {
+                totalCosts += item.amount;
+                costBreakdown['API & Trading'] = (costBreakdown['API & Trading'] || 0) + item.amount;
+            }
+            
+            // Revenue
+            let totalRevenue = 0;
+            for (const category of Object.values(roiData.revenue || {})) {
+                for (const item of (category || [])) {
+                    totalRevenue += item.amount;
+                }
+            }
+            
+            // Add Kalshi portfolio value as unrealized revenue
+            try {
+                const kalshiData = await cached('kalshi-balance', 30000, () => kalshiRequest('/portfolio/balance'));
+                const kalshiBalance = (kalshiData.balance || 0) / 100;
+                // Kalshi deposits are costs, current balance is asset value
+                totalRevenue += kalshiBalance;
+            } catch(e) {}
+            
+            res.writeHead(200, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' });
+            res.end(JSON.stringify({ totalCosts, totalRevenue, costBreakdown, monthsActive }));
+
         } else if (pathname === '/api/status') {
             // Dylbot activity log from file
             let status = { uptime: process.uptime(), trades_today: 0, scanner: 'active', log: [] };

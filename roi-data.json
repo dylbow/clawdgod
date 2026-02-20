@@ -1,0 +1,35 @@
+{
+    "costs": {
+        "hardware": [
+            {"item": "Mac Mini M4", "amount": 599, "date": "2026-02-01", "recurring": false}
+        ],
+        "subscriptions": [
+            {"item": "OpenClaw Pro", "amount": 20, "date": "2026-02-01", "recurring": "monthly"},
+            {"item": "ChatGPT Plus", "amount": 20, "date": "2026-02-01", "recurring": "monthly"},
+            {"item": "Canva Business", "amount": 13, "date": "2026-02-15", "recurring": "monthly"}
+        ],
+        "api_credits": [
+            {"item": "fal.ai credits", "amount": 15, "date": "2026-02-09"},
+            {"item": "fal.ai credits", "amount": 10, "date": "2026-02-16"},
+            {"item": "ElevenLabs (included in plan)", "amount": 0, "date": "2026-02-01"},
+            {"item": "Kalshi deposit", "amount": 20, "date": "2026-02-09"},
+            {"item": "Kalshi deposit", "amount": 11, "date": "2026-02-19"}
+        ],
+        "other": [
+            {"item": "Domain (theoretika.com)", "amount": 0, "date": "2026-02-01", "note": "not purchased yet"}
+        ]
+    },
+    "revenue": {
+        "kalshi": [
+            {"item": "Trading P&L", "amount": 0, "date": "2026-02-19", "note": "positions still open"}
+        ],
+        "youtube": [
+            {"item": "YouTube Ad Revenue", "amount": 0, "date": "2026-02-19", "note": "not monetized yet (need 1K subs)"}
+        ],
+        "fiverr": [
+            {"item": "Fiverr orders", "amount": 0, "date": "2026-02-19", "note": "1 gig live, no orders yet"}
+        ],
+        "other": []
+    },
+    "_notes": "Dylan: update this file anytime you add a cost or earn revenue. Dylbot will keep it current."
+}
