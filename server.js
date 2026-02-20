@@ -132,10 +132,20 @@ async function handleAPI(pathname, res) {
                 });
             }
             
+            // Calculate P&L
+            const totalDeposited = 31; // $20 + $11 deposits
+            const cashBalance = balance.balance / 100;
+            const portfolioValue = positionsWithPrices.reduce((sum, p) => sum + (p.position * (p.yes_price || 0)), 0) / 100;
+            const totalValue = cashBalance + portfolioValue;
+            const totalPnL = totalValue - totalDeposited;
+            
             res.writeHead(200, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' });
             res.end(JSON.stringify({
-                balance: balance.balance / 100, // cents to dollars
-                portfolio_value: positionsWithPrices.reduce((sum, p) => sum + (p.position * (p.yes_price || 0)), 0) / 100,
+                balance: cashBalance,
+                portfolio_value: portfolioValue,
+                total_value: totalValue,
+                total_deposited: totalDeposited,
+                total_pnl: totalPnL,
                 positions: positionsWithPrices
             }));
             

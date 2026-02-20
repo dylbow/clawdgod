@@ -52,7 +52,15 @@ async function fetchKalshi() {
         
         $('kalshi-balance').textContent = fmt(data.balance);
         $('kalshi-portfolio').textContent = fmt(data.portfolio_value);
-        $('kalshi-total').textContent = fmt(data.balance + data.portfolio_value);
+        $('kalshi-total').textContent = fmt(data.total_value || (data.balance + data.portfolio_value));
+        
+        // P&L
+        const pnlEl = $('kalshi-pnl');
+        if (pnlEl && data.total_pnl !== undefined) {
+            const pnl = data.total_pnl;
+            pnlEl.textContent = (pnl >= 0 ? '+' : '') + fmt(pnl);
+            pnlEl.style.color = pnl >= 0 ? 'var(--green)' : 'var(--red)';
+        }
         
         const posDiv = $('kalshi-positions');
         if (data.positions && data.positions.length > 0) {
