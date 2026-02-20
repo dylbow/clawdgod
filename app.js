@@ -301,6 +301,123 @@ async function initROI() {
     }
 }
 
+// === DRAG & DROP REORDER ===
+function initDragDrop() {
+    const grid = $('dashboard-grid');
+    if (!grid) return;
+    
+    const panels = grid.querySelectorAll('.draggable');
+    let draggedEl = null;
+    let placeholder = null;
+    let offsetX, offsetY;
+    
+    panels.forEach(panel => {
+        const handle = panel.querySelector('.drag-handle');
+        if (!handle) return;
+        
+        handle.style.cursor = 'grab';
+        
+        handle.addEventListener('mousedown', (e) => {
+            if (e.target.tagName === 'BUTTON' || e.target.tagName === 'A') return;
+            
+            draggedEl = panel;
+            const rect = panel.getBoundingClientRect();
+            offsetX = e.clientX - rect.left;
+            offsetY = e.clientY - rect.top;
+            
+            // Create placeholder
+            placeholder = document.createElement('div');
+            placeholder.className = 'drag-placeholder';
+            placeholder.style.height = rect.height + 'px';
+            placeholder.style.gridColumn = getComputedStyle(panel).gridColumn;
+            
+            // Style dragged element
+            panel.classList.add('dragging');
+            panel.style.width = rect.width + 'px';
+            panel.style.position = 'fixed';
+            panel.style.zIndex = '1000';
+            panel.style.left = rect.left + 'px';
+            panel.style.top = rect.top + 'px';
+            
+            panel.parentNode.insertBefore(placeholder, panel);
+            document.body.appendChild(panel);
+            
+            handle.style.cursor = 'grabbing';
+            e.preventDefault();
+        });
+    });
+    
+    document.addEventListener('mousemove', (e) => {
+        if (!draggedEl) return;
+        
+        draggedEl.style.left = (e.clientX - offsetX) + 'px';
+        draggedEl.style.top = (e.clientY - offsetY) + 'px';
+        
+        // Find drop target
+        const gridPanels = grid.querySelectorAll('.draggable:not(.dragging), .drag-placeholder');
+        let closest = null;
+        let closestDist = Infinity;
+        
+        gridPanels.forEach(p => {
+            const rect = p.getBoundingClientRect();
+            const centerY = rect.top + rect.height / 2;
+            const dist = Math.abs(e.clientY - centerY);
+            if (dist < closestDist) {
+                closestDist = dist;
+                closest = p;
+            }
+        });
+        
+        if (closest && closest !== placeholder) {
+            const rect = closest.getBoundingClientRect();
+            const midY = rect.top + rect.height / 2;
+            if (e.clientY < midY) {
+                grid.insertBefore(placeholder, closest);
+            } else {
+                grid.insertBefore(placeholder, closest.nextSibling);
+            }
+        }
+    });
+    
+    document.addEventListener('mouseup', () => {
+        if (!draggedEl) return;
+        
+        // Put panel back into grid at placeholder position
+        draggedEl.classList.remove('dragging');
+        draggedEl.style.position = '';
+        draggedEl.style.zIndex = '';
+        draggedEl.style.left = '';
+        draggedEl.style.top = '';
+        draggedEl.style.width = '';
+        
+        const handle = draggedEl.querySelector('.drag-handle');
+        if (handle) handle.style.cursor = 'grab';
+        
+        if (placeholder && placeholder.parentNode) {
+            placeholder.parentNode.insertBefore(draggedEl, placeholder);
+            placeholder.remove();
+        }
+        
+        // Save order to localStorage
+        const order = [...grid.querySelectorAll('.draggable')].map(p => p.dataset.panel);
+        localStorage.setItem('clawdgod-panel-order', JSON.stringify(order));
+        
+        draggedEl = null;
+        placeholder = null;
+    });
+    
+    // Restore saved order
+    try {
+        const saved = JSON.parse(localStorage.getItem('clawdgod-panel-order'));
+        if (saved && saved.length > 0) {
+            saved.forEach(panelId => {
+                const panel = grid.querySelector(`[data-panel="${panelId}"]`);
+                if (panel) grid.appendChild(panel);
+            });
+        }
+    } catch(e) {}
+}
+
 // === INIT ===
 async function init() {
     console.log('⚡ ClawdGod Command Center — Live Mode');
@@ -311,6 +428,7 @@ async function init() {
     // Initialize special features
     initWealthTracker();
     initROI();
+    initDragDrop();
     setTimeout(initPnLChart, 500);
     
     // Auto-refresh

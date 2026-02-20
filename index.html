@@ -24,10 +24,26 @@
         </header>
 
         <!-- Main Grid -->
-        <div class="grid">
+        <div class="grid" id="dashboard-grid">
+            <!-- Empyre Wealth Tracker (TOP) -->
+            <div class="panel wealth-panel draggable" data-panel="empyre" style="grid-column: 1 / -1;">
+                <div class="panel-header drag-handle">
+                    <h2>👑 Empyre Tracker</h2>
+                    <span class="badge live">LIVE</span>
+                </div>
+                <div class="panel-body">
+                    <div id="wealth-tracker"></div>
+                    <div class="divider"></div>
+                    <h3>Kalshi P&L Trend</h3>
+                    <div class="chart-container">
+                        <canvas id="pnl-chart"></canvas>
+                    </div>
+                </div>
+            </div>
+
             <!-- Kalshi Trading Panel -->
-            <div class="panel kalshi-panel">
-                <div class="panel-header">
+            <div class="panel kalshi-panel draggable" data-panel="kalshi">
+                <div class="panel-header drag-handle">
                     <h2>🌡️ Kalshi Trading</h2>
                     <span class="badge live">LIVE</span>
                 </div>
@@ -101,8 +117,8 @@
             </div>
 
             <!-- Theoretika YouTube Panel -->
-            <div class="panel theoretika-panel">
-                <div class="panel-header">
+            <div class="panel theoretika-panel draggable" data-panel="theoretika">
+                <div class="panel-header drag-handle">
                     <h2>🎬 Theoretika</h2>
                     <span class="badge">YouTube</span>
                 </div>
@@ -168,8 +184,8 @@
             </div>
 
             <!-- Monday.com Tasks Panel -->
-            <div class="panel tasks-panel">
-                <div class="panel-header">
+            <div class="panel tasks-panel draggable" data-panel="monday">
+                <div class="panel-header drag-handle">
                     <h2>📋 Empyre HQ</h2>
                     <span class="badge">Monday.com</span>
                 </div>
@@ -209,25 +225,9 @@
                 </div>
             </div>
 
-            <!-- Empyre Wealth Tracker -->
-            <div class="panel wealth-panel" style="grid-column: 1 / -1;">
-                <div class="panel-header">
-                    <h2>👑 Empyre Tracker</h2>
-                    <span class="badge live">LIVE</span>
-                </div>
-                <div class="panel-body">
-                    <div id="wealth-tracker"></div>
-                    <div class="divider"></div>
-                    <h3>Kalshi P&L Trend</h3>
-                    <div class="chart-container">
-                        <canvas id="pnl-chart"></canvas>
-                    </div>
-                </div>
-            </div>
-
             <!-- Dylbot Status Panel -->
-            <div class="panel status-panel">
-                <div class="panel-header">
+            <div class="panel status-panel draggable" data-panel="dylbot">
+                <div class="panel-header drag-handle">
                     <h2>🤖 Dylbot Status</h2>
                     <span class="badge live">ACTIVE</span>
                 </div>
