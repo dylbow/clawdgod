@@ -148,6 +148,101 @@ async function fetchYouTube() {
     }
 }
 
+// === NOTIFICATIONS ===
+async function fetchNotifications() {
+    try {
+        const res = await fetch(API_BASE + '/api/notifications');
+        const data = await res.json();
+        
+        // Update email count badge
+        const emailBadge = $('email-count');
+        if (emailBadge) {
+            const count = data.unreadEmails || 0;
+            emailBadge.textContent = `📧 ${count}`;
+            if (count > 0) {
+                emailBadge.classList.add('has-unread');
+            } else {
+                emailBadge.classList.remove('has-unread');
+            }
+        }
+        
+        const notifList = $('notif-list');
+        if (!notifList) return;
+        
+        const activeTab = document.querySelector('.notif-tab.active')?.dataset.tab || 'all';
+        
+        let items = data.notifications || [];
+        if (activeTab === 'email') items = items.filter(n => n.type === 'email');
+        if (activeTab === 'telegram') items = items.filter(n => n.type === 'telegram');
+        
+        // Add Telegram status as a notification
+        if (activeTab === 'all' || activeTab === 'telegram') {
+            items.push({
+                type: 'telegram',
+                from: 'Dylbot ⚡',
+                subject: 'Connected — monitoring Dylan\'s chat',
+                date: new Date().toISOString(),
+                isStatus: true
+            });
+        }
+        
+        if (items.length === 0) {
+            notifList.innerHTML = '<div class="notif-empty">No notifications</div>';
+            return;
+        }
+        
+        notifList.innerHTML = items.map(n => {
+            const icon = n.type === 'email' ? '📧' : '💬';
+            const from = n.from ? n.from.replace(/<.*>/, '').trim() : 'Unknown';
+            const subject = n.subject || '(no subject)';
+            let timeStr = '';
+            if (n.date) {
+                try {
+                    const d = new Date(n.date);
+                    const now = new Date();
+                    const diffMin = Math.floor((now - d) / 60000);
+                    if (diffMin < 60) timeStr = `${diffMin}m`;
+                    else if (diffMin < 1440) timeStr = `${Math.floor(diffMin/60)}h`;
+                    else timeStr = `${Math.floor(diffMin/1440)}d`;
+                } catch(e) {}
+            }
+            
+            return `<div class="notif-item" data-type="${n.type}">
+                <span class="notif-icon">${icon}</span>
+                <div class="notif-content">
+                    <div class="notif-title">${subject}</div>
+                    <div class="notif-meta">${from}</div>
+                </div>
+                <span class="notif-time">${timeStr}</span>
+            </div>`;
+        }).join('');
+        
+    } catch(e) {
+        console.error('Notifications fetch error:', e);
+        const notifList = $('notif-list');
+        if (notifList) {
+            notifList.innerHTML = `<div class="notif-item">
+                <span class="notif-icon">💬</span>
+                <div class="notif-content">
+                    <div class="notif-title">Telegram — Connected</div>
+                    <div class="notif-meta">Dylbot monitoring Dylan's chat</div>
+                </div>
+                <span class="notif-time">now</span>
+            </div>
+            <div class="notif-empty" style="padding:12px;font-size:11px;">Gmail: connect API for email notifications</div>`;
+        }
+    }
+}
+
+// Tab switching for notifications
+document.addEventListener('click', (e) => {
+    if (e.target.classList.contains('notif-tab')) {
+        document.querySelectorAll('.notif-tab').forEach(t => t.classList.remove('active'));
+        e.target.classList.add('active');
+        fetchNotifications();
+    }
+});
+
 // === WEALTH TRACKER (surprise feature) ===
 function initWealthTracker() {
     const container = $('wealth-tracker');
@@ -461,7 +556,7 @@ async function init() {
     console.log('⚡ ClawdGod Command Center — Live Mode');
     
     // Initial fetch
-    await Promise.allSettled([fetchKalshi(), fetchMonday(), fetchYouTube()]);
+    await Promise.allSettled([fetchKalshi(), fetchMonday(), fetchYouTube(), fetchNotifications()]);
     
     // Initialize special features
     initWealthTracker();
@@ -473,6 +568,7 @@ async function init() {
     setInterval(fetchKalshi, 30000);   // 30 sec
     setInterval(fetchMonday, 120000);  // 2 min
     setInterval(fetchYouTube, 300000); // 5 min
+    setInterval(fetchNotifications, 120000); // 2 min
     
     console.log('📊 All systems online. Refreshing every 30s-5min.');
 }

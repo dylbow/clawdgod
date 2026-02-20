@@ -86,6 +86,37 @@ function mondayQuery(query) {
     });
 }
 
+// === GMAIL ===
+const GMAIL_TOKEN_PATH = path.join(__dirname, '..', '..', '..', 'scripts', 'gdrive_token.json');
+let gmailToken;
+try { gmailToken = JSON.parse(fs.readFileSync(GMAIL_TOKEN_PATH, 'utf8')); } catch(e) { console.warn('No Gmail token found'); }
+
+function gmailRequest(endpoint) {
+    return new Promise((resolve, reject) => {
+        if (!gmailToken) return reject(new Error('No Gmail token'));
+        // Refresh token if needed
+        const tokenStr = gmailToken.token || gmailToken.access_token;
+        const options = {
+            hostname: 'gmail.googleapis.com',
+            path: endpoint,
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${tokenStr}`,
+                'Content-Type': 'application/json'
+            }
+        };
+        const req = https.request(options, (res) => {
+            let data = '';
+            res.on('data', c => data += c);
+            res.on('end', () => {
+                try { resolve(JSON.parse(data)); } catch(e) { reject(e); }
+            });
+        });
+        req.on('error', reject);
+        req.end();
+    });
+}
+
 // === YOUTUBE (public, no API key needed for basic scraping via OpenClaw browser) ===
 // We'll use the YouTube Data API v3 with no key for basic channel info
 // Actually, we'll scrape from the browser snapshot data file
@@ -230,6 +261,59 @@ async function handleAPI(pathname, res) {
             
             res.writeHead(200, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' });
             res.end(JSON.stringify({ totalCosts, totalRevenue, costBreakdown, monthsActive }));
+
+        } else if (pathname === '/api/notifications') {
+            // Aggregate notifications from activity + Gmail (when available)
+            const notifications = [];
+            
+            // Read Dylbot activity log
+            try {
+                const statusData = JSON.parse(fs.readFileSync(path.join(__dirname, 'dylbot-status.json'), 'utf8'));
+                if (statusData.log) {
+                    statusData.log.slice(0, 8).forEach(entry => {
+                        notifications.push({
+                            type: 'activity',
+                            from: 'Dylbot ⚡',
+                            subject: entry.msg || entry,
+                            date: entry.time ? new Date().toISOString().split('T')[0] + 'T' + entry.time + ':00' : new Date().toISOString()
+                        });
+                    });
+                }
+            } catch(e) {}
+            
+            // Gmail unread (if token has scope)
+            let unreadCount = 0;
+            try {
+                const gmail = await cached('gmail-unread', 120000, () => 
+                    gmailRequest('/gmail/v1/users/me/messages?maxResults=10&q=is:unread&labelIds=INBOX')
+                );
+                if (gmail.messages) {
+                    unreadCount = gmail.resultSizeEstimate || gmail.messages.length;
+                    for (const msg of gmail.messages.slice(0, 5)) {
+                        try {
+                            const detail = await cached('gmail-msg-' + msg.id, 300000, () =>
+                                gmailRequest('/gmail/v1/users/me/messages/' + msg.id + '?format=metadata&metadataHeaders=From&metadataHeaders=Subject&metadataHeaders=Date')
+                            );
+                            const headers = detail.payload?.headers || [];
+                            notifications.unshift({
+                                type: 'email',
+                                from: headers.find(h => h.name === 'From')?.value || 'Unknown',
+                                subject: headers.find(h => h.name === 'Subject')?.value || '(no subject)',
+                                date: headers.find(h => h.name === 'Date')?.value || ''
+                            });
+                        } catch(e) {}
+                    }
+                }
+            } catch(e) { /* Gmail scope not available */ }
+            
+            res.writeHead(200, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' });
+            res.end(JSON.stringify({ 
+                notifications, 
+                unreadEmails: unreadCount,
+                telegramActive: true,
+                gmailConnected: unreadCount > 0
+            }));
+            return;
 
         } else if (pathname === '/api/status') {
             // Dylbot activity log from file

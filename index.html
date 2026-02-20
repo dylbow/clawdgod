@@ -239,6 +239,27 @@
                 </div>
             </div>
 
+            <!-- Notifications Panel -->
+            <div class="panel notifications-panel draggable" data-panel="notifications">
+                <div class="panel-header drag-handle">
+                    <h2>🔔 Notifications</h2>
+                    <div class="notif-badges">
+                        <span class="notif-badge email-badge" id="email-count" title="Unread emails">📧 —</span>
+                        <span class="notif-badge tg-badge" title="Telegram">💬 Active</span>
+                    </div>
+                </div>
+                <div class="panel-body">
+                    <div class="notif-tabs">
+                        <button class="notif-tab active" data-tab="all">All</button>
+                        <button class="notif-tab" data-tab="email">Email</button>
+                        <button class="notif-tab" data-tab="telegram">Telegram</button>
+                    </div>
+                    <div class="notif-list" id="notif-list">
+                        <div class="notif-empty">Loading notifications...</div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Dylbot Status Panel -->
             <div class="panel status-panel draggable" data-panel="dylbot">
                 <div class="panel-header drag-handle">

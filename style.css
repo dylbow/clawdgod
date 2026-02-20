@@ -711,6 +711,137 @@ body {
     transition: all 0.2s ease;
 }
 
+/* Notifications Panel */
+.notifications-panel .panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.notif-badges {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.notif-badge {
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 10px;
+    background: var(--bg-hover);
+    border: 1px solid var(--border);
+    font-family: 'JetBrains Mono', monospace;
+}
+
+.notif-badge.has-unread {
+    background: var(--red-dim);
+    border-color: var(--red);
+    color: var(--red);
+    animation: pulse-badge 2s ease-in-out infinite;
+}
+
+@keyframes pulse-badge {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+}
+
+.notif-tabs {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 12px;
+    padding: 3px;
+    background: var(--bg-primary);
+    border-radius: 8px;
+}
+
+.notif-tab {
+    flex: 1;
+    padding: 6px 12px;
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 12px;
+    font-family: 'Inter', sans-serif;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+}
+
+.notif-tab:hover {
+    color: var(--text-primary);
+    background: var(--bg-hover);
+}
+
+.notif-tab.active {
+    background: var(--bg-panel);
+    color: var(--text-primary);
+    border: 1px solid var(--border);
+}
+
+.notif-list {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.notif-item {
+    display: flex;
+    gap: 10px;
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 4px;
+    transition: background 0.15s ease;
+    cursor: default;
+}
+
+.notif-item:hover {
+    background: var(--bg-hover);
+}
+
+.notif-icon {
+    font-size: 18px;
+    flex-shrink: 0;
+    width: 24px;
+    text-align: center;
+}
+
+.notif-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.notif-title {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.notif-meta {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.notif-time {
+    font-size: 10px;
+    color: var(--text-muted);
+    font-family: 'JetBrains Mono', monospace;
+    flex-shrink: 0;
+    padding-top: 2px;
+}
+
+.notif-empty {
+    text-align: center;
+    padding: 24px;
+    color: var(--text-muted);
+    font-size: 13px;
+}
+
 /* Responsive */
 @media (max-width: 1024px) {
     .grid {
