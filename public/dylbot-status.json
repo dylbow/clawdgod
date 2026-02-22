@@ -1,0 +1,15 @@
+{
+  "uptime": 86400,
+  "trades_today": 4,
+  "scanner": "active",
+  "log": [
+    { "time": "15:34", "msg": "🔧 Dashboard notifications panel built" },
+    { "time": "13:00", "msg": "📹 Mars 4K video + Terraform short posted" },
+    { "time": "12:50", "msg": "🎧 Lofi Video 1 posted — Dreams of Treasure Planet" },
+    { "time": "12:42", "msg": "🔄 Terraform short rebuilt — edge-to-edge crop fix" },
+    { "time": "11:56", "msg": "🎬 Terraform Mars short assembled (52s, 4K vertical)" },
+    { "time": "10:24", "msg": "📈 Mars video rebuilt at 4K (3840x2160) — quality fix" },
+    { "time": "09:50", "msg": "🖼️ Mars thumbnail resized to 1280x720" },
+    { "time": "08:30", "msg": "☀️ Morning brief delivered" }
+  ]
+}

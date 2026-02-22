@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: clawdgod
+    runtime: node
+    buildCommand: echo "No build needed"
+    startCommand: node server.js
+    envVars:
+      - key: MONDAY_TOKEN
+        sync: false
+      - key: KALSHI_PRIVATE_KEY
+        sync: false

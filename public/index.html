@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ClawdGod — Command Center</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="dashboard">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-left">
+                <span class="logo">⚡</span>
+                <h1>ClawdGod</h1>
+                <span class="subtitle">Command Center</span>
+            </div>
+            <div class="header-right">
+                <div class="status-indicator online"></div>
+                <span class="status-text">SYSTEMS ONLINE</span>
+                <span class="clock" id="clock"></span>
+            </div>
+        </header>
+
+        <!-- Main Grid -->
+        <div class="grid" id="dashboard-grid">
+            <!-- Empyre Wealth Tracker (TOP) -->
+            <div class="panel wealth-panel draggable" data-panel="empyre" style="grid-column: 1 / -1;">
+                <div class="panel-header drag-handle">
+                    <h2>👑 Empyre Tracker</h2>
+                    <span class="badge live">LIVE</span>
+                </div>
+                <div class="panel-body">
+                    <div id="wealth-tracker"></div>
+                    <div class="divider"></div>
+                    <h3>Total Revenue Trend</h3>
+                    <div class="chart-container">
+                        <canvas id="total-chart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Kalshi Trading Panel -->
+            <div class="panel kalshi-panel draggable" data-panel="kalshi">
+                <div class="panel-header drag-handle">
+                    <h2>🌡️ Kalshi Trading</h2>
+                    <span class="badge live">LIVE</span>
+                </div>
+                <div class="panel-body">
+                    <div class="stats-row">
+                        <div class="stat">
+                            <span class="stat-label">CASH</span>
+                            <span class="stat-value" id="kalshi-balance">—</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-label">POSITIONS</span>
+                            <span class="stat-value" id="kalshi-portfolio">—</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-label">TOTAL</span>
+                            <span class="stat-value accent" id="kalshi-total">—</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-label">P&L</span>
+                            <span class="stat-value" id="kalshi-pnl">—</span>
+                        </div>
+                    </div>
+                    <div class="divider"></div>
+                    <h3>Open Positions</h3>
+                    <div class="positions" id="kalshi-positions">
+                        <div class="position">
+                            <span class="position-name">CHI below 57°F today</span>
+                            <span class="position-detail">3× YES @ 28¢</span>
+                            <span class="position-pnl positive">+$2.28 if YES</span>
+                        </div>
+                        <div class="position">
+                            <span class="position-name">NYC below 40°F today</span>
+                            <span class="position-detail">10× YES @ 1¢</span>
+                            <span class="position-pnl positive">+$9.90 if YES</span>
+                        </div>
+                        <div class="position">
+                            <span class="position-name">CHI above 45°F tmrw</span>
+                            <span class="position-detail">9× YES @ 9¢</span>
+                            <span class="position-pnl positive">+$8.19 if YES</span>
+                        </div>
+                        <div class="position">
+                            <span class="position-name">DEN above 41°F today</span>
+                            <span class="position-detail">10× YES @ 2¢</span>
+                            <span class="position-pnl resting">⏳ resting</span>
+                        </div>
+                        <div class="position">
+                            <span class="position-name">Cabinet exit before Mar</span>
+                            <span class="position-detail">5× YES @ 20¢</span>
+                            <span class="position-pnl neutral">open</span>
+                        </div>
+                        <div class="position">
+                            <span class="position-name">Pam Bondi first out</span>
+                            <span class="position-detail">4× YES @ 22¢</span>
+                            <span class="position-pnl neutral">open</span>
+                        </div>
+                        <div class="position">
+                            <span class="position-name">OpenAI IPO before Anthropic</span>
+                            <span class="position-detail">2× YES @ 41¢</span>
+                            <span class="position-pnl neutral">open</span>
+                        </div>
+                    </div>
+                    <div class="divider"></div>
+                    <h3>P&L Trend</h3>
+                    <div class="chart-container mini">
+                        <canvas id="kalshi-chart"></canvas>
+                    </div>
+                    <div class="divider"></div>
+                    <h3>🔥 Scanner Alerts</h3>
+                    <div class="scanner-alerts" id="scanner-alerts">
+                        <div class="alert hot">
+                            <span class="alert-edge">+44%</span>
+                            <span class="alert-desc">Denver above 41°F — NOAA says 41°F, market 6%</span>
+                        </div>
+                        <div class="alert hot">
+                            <span class="alert-edge">+30%</span>
+                            <span class="alert-desc">NYC NOT 40.5-42.5°F — forecast 42°F, bracket overpriced</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Theoretika YouTube Panel -->
+            <div class="panel theoretika-panel draggable" data-panel="theoretika">
+                <div class="panel-header drag-handle">
+                    <h2>🎬 Theoretika</h2>
+                    <span class="badge">YouTube</span>
+                </div>
+                <div class="panel-body">
+                    <div class="stats-row">
+                        <div class="stat">
+                            <span class="stat-label">SUBSCRIBERS</span>
+                            <span class="stat-value" id="yt-subs">—</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-label">TOTAL VIEWS</span>
+                            <span class="stat-value" id="yt-views">—</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-label">VIDEOS</span>
+                            <span class="stat-value" id="yt-videos">10</span>
+                        </div>
+                    </div>
+                    <div class="divider"></div>
+                    <h3>Video Pipeline</h3>
+                    <div class="pipeline">
+                        <div class="pipeline-item done">
+                            <span class="pip-status">✅</span>
+                            <span class="pip-name">Nuclear Bombs</span>
+                            <span class="pip-stage">POSTED</span>
+                        </div>
+                        <div class="pipeline-item done">
+                            <span class="pip-status">✅</span>
+                            <span class="pip-name">Black Hole</span>
+                            <span class="pip-stage">REVIEW</span>
+                        </div>
+                        <div class="pipeline-item active">
+                            <span class="pip-status">🔄</span>
+                            <span class="pip-name">Mars Colony</span>
+                            <span class="pip-stage">IMAGES DONE</span>
+                        </div>
+                        <div class="pipeline-item pending">
+                            <span class="pip-status">📋</span>
+                            <span class="pip-name">Ocean Depths</span>
+                            <span class="pip-stage">NEEDS SCRIPT</span>
+                        </div>
+                        <div class="pipeline-item active">
+                            <span class="pip-status">🔄</span>
+                            <span class="pip-name">Magnetic Field</span>
+                            <span class="pip-stage">1/30 IMAGES</span>
+                        </div>
+                    </div>
+                    <div class="divider"></div>
+                    <h3>Views Trend</h3>
+                    <div class="chart-container mini">
+                        <canvas id="yt-chart"></canvas>
+                    </div>
+                    <div class="divider"></div>
+                    <h3>Shorts</h3>
+                    <div class="pipeline">
+                        <div class="pipeline-item done">
+                            <span class="pip-status">✅</span>
+                            <span class="pip-name">Nuclear Explosion (52s)</span>
+                            <span class="pip-stage">APPROVED</span>
+                        </div>
+                        <div class="pipeline-item done">
+                            <span class="pip-status">✅</span>
+                            <span class="pip-name">Sun Disappeared (69s)</span>
+                            <span class="pip-stage">APPROVED</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Monday.com Tasks Panel -->
+            <div class="panel tasks-panel draggable" data-panel="monday">
+                <div class="panel-header drag-handle">
+                    <h2>📋 Empyre HQ</h2>
+                    <span class="badge">Monday.com</span>
+                </div>
+                <div class="panel-body">
+                    <div class="task-list" id="monday-tasks">
+                        <div class="task priority-high">
+                            <span class="task-priority">🔴</span>
+                            <span class="task-name">Lofi Video 1 — Assemble & Ship</span>
+                            <span class="task-status status-working">IN PROGRESS</span>
+                        </div>
+                        <div class="task priority-high">
+                            <span class="task-priority">🔴</span>
+                            <span class="task-name">ClawdGod Dashboard v1</span>
+                            <span class="task-status status-working">IN PROGRESS</span>
+                        </div>
+                        <div class="task priority-high">
+                            <span class="task-priority">🔴</span>
+                            <span class="task-name">Fiverr Gig Images</span>
+                            <span class="task-status status-todo">TO DO</span>
+                        </div>
+                        <div class="task priority-med">
+                            <span class="task-priority">🟡</span>
+                            <span class="task-name">Black Hole Video — Dylan Review</span>
+                            <span class="task-status status-waiting">WAITING</span>
+                        </div>
+                        <div class="task priority-med">
+                            <span class="task-priority">🟡</span>
+                            <span class="task-name">Mars Video — Assembly</span>
+                            <span class="task-status status-todo">TO DO</span>
+                        </div>
+                        <div class="task priority-low">
+                            <span class="task-priority">🟢</span>
+                            <span class="task-name">Kalshi Weather Scanner — Auto-trade</span>
+                            <span class="task-status status-done">DONE</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Notifications Panel -->
+            <div class="panel notifications-panel draggable" data-panel="notifications">
+                <div class="panel-header drag-handle">
+                    <h2>🔔 Notifications</h2>
+                    <div class="notif-badges">
+                        <span class="notif-badge email-badge" id="email-count" title="Unread emails">📧 —</span>
+                        <span class="notif-badge tg-badge" title="Telegram">💬 Active</span>
+                    </div>
+                </div>
+                <div class="panel-body">
+                    <div class="notif-tabs">
+                        <button class="notif-tab active" data-tab="all">All</button>
+                        <button class="notif-tab" data-tab="email">Email</button>
+                        <button class="notif-tab" data-tab="telegram">Telegram</button>
+                    </div>
+                    <div class="notif-list" id="notif-list">
+                        <div class="notif-empty">Loading notifications...</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dylbot Status Panel -->
+            <div class="panel status-panel draggable" data-panel="dylbot">
+                <div class="panel-header drag-handle">
+                    <h2>🤖 Dylbot Status</h2>
+                    <span class="badge live">ACTIVE</span>
+                </div>
+                <div class="panel-body">
+                    <div class="agent-status">
+                        <div class="heartbeat">
+                            <span class="pulse"></span>
+                            <span class="agent-label">Agent Heartbeat</span>
+                        </div>
+                    </div>
+                    <div class="stats-row">
+                        <div class="stat">
+                            <span class="stat-label">UPTIME</span>
+                            <span class="stat-value" id="uptime">—</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-label">TRADES TODAY</span>
+                            <span class="stat-value accent">4</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-label">SCANNER</span>
+                            <span class="stat-value green">ACTIVE</span>
+                        </div>
+                    </div>
+                    <div class="divider"></div>
+                    <h3>Activity Log</h3>
+                    <div class="activity-log" id="activity-log">
+                        <div class="log-entry">
+                            <span class="log-time">09:36</span>
+                            <span class="log-msg">4 weather trades placed — $1.74 risked, $22 max payout</span>
+                        </div>
+                        <div class="log-entry">
+                            <span class="log-time">09:25</span>
+                            <span class="log-msg">Morning brief delivered — scanner found 15 opportunities</span>
+                        </div>
+                        <div class="log-entry">
+                            <span class="log-time">00:02</span>
+                            <span class="log-msg">Weather Scanner v1 built & deployed</span>
+                        </div>
+                        <div class="log-entry">
+                            <span class="log-time">23:47</span>
+                            <span class="log-msg">Kalshi market scan — no strong short-term trades (crypto/political)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ROI Tracker (corner widget) -->
+    <div class="roi-widget" id="roi-widget">
+        <div class="roi-header">
+            <span class="roi-title">💸 DYLBOT ROI</span>
+            <span class="roi-toggle" id="roi-toggle">▼</span>
+        </div>
+        <div class="roi-body" id="roi-body">
+            <div class="roi-row costs">
+                <span class="roi-label">TOTAL INVESTED</span>
+                <span class="roi-value" id="roi-costs">—</span>
+            </div>
+            <div class="roi-row revenue">
+                <span class="roi-label">TOTAL EARNED</span>
+                <span class="roi-value" id="roi-revenue">—</span>
+            </div>
+            <div class="roi-divider"></div>
+            <div class="roi-row net">
+                <span class="roi-label" id="roi-net-label">NET</span>
+                <span class="roi-value" id="roi-net">—</span>
+            </div>
+            <div class="roi-bar-container">
+                <div class="roi-bar" id="roi-bar"></div>
+            </div>
+            <div class="roi-breakdown" id="roi-breakdown"></div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
