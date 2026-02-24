@@ -50,9 +50,11 @@ async function fetchKalshi() {
         const data = await res.json();
         if (data.error) throw new Error(data.error);
         
-        $('kalshi-balance').textContent = fmt(data.balance);
-        $('kalshi-portfolio').textContent = fmt(data.portfolio_value);
-        $('kalshi-total').textContent = fmt(data.total_value || (data.balance + data.portfolio_value));
+        const bal = data.balance || 0;
+        const portVal = data.portfolio_value || 0;
+        $('kalshi-balance').textContent = fmt(bal);
+        $('kalshi-portfolio').textContent = fmt(portVal);
+        $('kalshi-total').textContent = fmt(data.total_value || (bal + portVal));
         
         // P&L
         const pnlEl = $('kalshi-pnl');
@@ -100,14 +102,15 @@ async function fetchMonday() {
         const data = await res.json();
         
         const taskDiv = $('monday-tasks');
-        if (data.tasks && data.tasks.length > 0) {
-            taskDiv.innerHTML = data.tasks.slice(0, 8).map(t => {
+        const tasks = data.tasks || [];
+        if (tasks.length > 0) {
+            taskDiv.innerHTML = tasks.slice(0, 8).map(t => {
                 const priorityIcon = t.priority === 'Critical' || t.priority === 'High' ? '🔴' : 
                                      t.priority === 'Medium' ? '🟡' : '🟢';
                 const statusClass = t.status === 'Working on it' ? 'status-working' :
                                     t.status === 'Done' ? 'status-done' :
                                     t.status === 'Stuck' ? 'status-waiting' : 'status-todo';
-                const statusText = t.status || 'TO DO';
+                const statusText = t.status || 'NOT STARTED';
                 
                 return `<div class="task">
                     <span class="task-priority">${priorityIcon}</span>
