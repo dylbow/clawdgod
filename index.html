@@ -41,6 +41,84 @@
                 </div>
             </div>
 
+            <!-- AI Agent Activity Feed (NEW — Empyre flagship feature) -->
+            <div class="panel agent-feed-panel draggable" data-panel="agent-feed" style="grid-column: 1 / -1;">
+                <div class="panel-header drag-handle">
+                    <h2>🤖 AI Agent Activity Feed</h2>
+                    <div class="feed-controls">
+                        <span class="feed-filter active" data-filter="all">All</span>
+                        <span class="feed-filter" data-filter="content">Content</span>
+                        <span class="feed-filter" data-filter="trading">Trading</span>
+                        <span class="feed-filter" data-filter="system">System</span>
+                    </div>
+                    <span class="badge live">LIVE</span>
+                </div>
+                <div class="panel-body">
+                    <div class="agent-feed-stats">
+                        <div class="feed-stat">
+                            <span class="feed-stat-value" id="feed-actions-today">0</span>
+                            <span class="feed-stat-label">ACTIONS TODAY</span>
+                        </div>
+                        <div class="feed-stat">
+                            <span class="feed-stat-value" id="feed-videos-made">0</span>
+                            <span class="feed-stat-label">VIDEOS MADE</span>
+                        </div>
+                        <div class="feed-stat">
+                            <span class="feed-stat-value" id="feed-trades-placed">0</span>
+                            <span class="feed-stat-label">TRADES PLACED</span>
+                        </div>
+                        <div class="feed-stat">
+                            <span class="feed-stat-value" id="feed-images-gen">0</span>
+                            <span class="feed-stat-label">IMAGES GEN'D</span>
+                        </div>
+                        <div class="feed-stat">
+                            <span class="feed-stat-value" id="feed-cost-today">$0</span>
+                            <span class="feed-stat-label">COST TODAY</span>
+                        </div>
+                    </div>
+                    <div class="divider"></div>
+                    <div class="agent-feed-timeline" id="agent-feed-timeline">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Content Pipeline Kanban (NEW) -->
+            <div class="panel pipeline-kanban-panel draggable" data-panel="pipeline" style="grid-column: 1 / -1;">
+                <div class="panel-header drag-handle">
+                    <h2>📹 Content Pipeline</h2>
+                    <span class="badge">KANBAN</span>
+                </div>
+                <div class="panel-body">
+                    <div class="kanban-board" id="kanban-board">
+                        <div class="kanban-col">
+                            <div class="kanban-col-header">📝 Script</div>
+                            <div class="kanban-cards" id="kanban-script"></div>
+                        </div>
+                        <div class="kanban-col">
+                            <div class="kanban-col-header">🎨 Images</div>
+                            <div class="kanban-cards" id="kanban-images"></div>
+                        </div>
+                        <div class="kanban-col">
+                            <div class="kanban-col-header">🎙️ Voiceover</div>
+                            <div class="kanban-cards" id="kanban-voice"></div>
+                        </div>
+                        <div class="kanban-col">
+                            <div class="kanban-col-header">🔧 Assembly</div>
+                            <div class="kanban-cards" id="kanban-assembly"></div>
+                        </div>
+                        <div class="kanban-col">
+                            <div class="kanban-col-header">👀 Review</div>
+                            <div class="kanban-cards" id="kanban-review"></div>
+                        </div>
+                        <div class="kanban-col">
+                            <div class="kanban-col-header">✅ Posted</div>
+                            <div class="kanban-cards" id="kanban-posted"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Kalshi Trading Panel -->
             <div class="panel kalshi-panel draggable" data-panel="kalshi">
                 <div class="panel-header drag-handle">

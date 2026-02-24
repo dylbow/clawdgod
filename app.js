@@ -551,6 +551,95 @@ function initDragDrop() {
     } catch(e) {}
 }
 
+// === AI AGENT ACTIVITY FEED ===
+const ACTIVITY_FEED = [
+    { time: '10:19', icon: '💡', action: '<strong>Empyre business plan updated</strong> — added tiered pricing, free tier strategy, marketing content roadmap', type: 'system' },
+    { time: '10:15', icon: '📸', action: 'Dashboard screenshot captured for <strong>build-in-public</strong> content', type: 'system' },
+    { time: '09:48', icon: '🖼️', action: 'Ancient Aliens thumbnail cropped — "BEFORE US?" text overlay added', type: 'content' },
+    { time: '09:36', icon: '📊', action: '<strong>Kalshi weather scanner</strong> — 2 trades placed: NYC temp + Chicago temp', type: 'trading' },
+    { time: '09:25', icon: '☀️', action: '<strong>Morning brief</strong> delivered — 3 Kalshi opportunities, 2 video tasks, market update', type: 'system' },
+    { time: '09:00', icon: '🎬', action: 'Glass Rain Planet short <strong>uploaded to Drive</strong> — 56s, 4K vertical, ready to post', type: 'content' },
+    { time: '08:30', icon: '🔍', action: 'Polymarket whale scan — <strong>Kevin Warsh</strong> position up to $395K (94.5¢ YES)', type: 'trading' },
+    { time: '02:14', icon: '🎙️', action: 'Ancient Aliens v3 voiceover generated — 9:59 duration, Daniel voice', type: 'content' },
+    { time: '01:30', icon: '🖼️', action: '<strong>7 images generated</strong> via fal.ai Flux Pro for Black Hole Sound short ($0.35)', type: 'content' },
+    { time: '00:45', icon: '📝', action: 'Life Inside Earth <strong>image prompts refreshed</strong> — 16 scenes, uploaded to Drive', type: 'content' },
+    { time: '00:02', icon: '💾', action: 'Nightly backup pushed to <strong>GitHub</strong> (dylbow/openclaw-backup)', type: 'system' },
+];
+
+function initActivityFeed() {
+    const timeline = $('agent-feed-timeline');
+    if (!timeline) return;
+
+    const renderFeed = (filter) => {
+        const items = filter === 'all' ? ACTIVITY_FEED : ACTIVITY_FEED.filter(i => i.type === filter);
+        timeline.innerHTML = items.map(item => `
+            <div class="feed-item" data-type="${item.type}">
+                <span class="feed-icon">${item.icon}</span>
+                <div class="feed-body">
+                    <div class="feed-action">${item.action} <span class="feed-tag ${item.type}">${item.type.toUpperCase()}</span></div>
+                </div>
+                <span class="feed-time">${item.time}</span>
+            </div>
+        `).join('');
+    };
+
+    renderFeed('all');
+
+    // Update stats
+    $('feed-actions-today').textContent = ACTIVITY_FEED.length;
+    $('feed-videos-made').textContent = ACTIVITY_FEED.filter(i => i.type === 'content' && i.action.includes('uploaded')).length + 1;
+    $('feed-trades-placed').textContent = '2';
+    $('feed-images-gen').textContent = '7';
+    $('feed-cost-today').textContent = '$0.35';
+
+    // Filter buttons
+    document.querySelectorAll('.feed-filter').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.feed-filter').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            renderFeed(btn.dataset.filter);
+        });
+    });
+}
+
+// === CONTENT PIPELINE KANBAN ===
+const PIPELINE_DATA = {
+    script: [
+        { title: 'Ocean Depths', type: 'long-form' },
+    ],
+    images: [
+        { title: 'Life Inside Earth', type: 'long-form', note: 'Dylan generating' },
+    ],
+    voice: [],
+    assembly: [],
+    review: [
+        { title: 'Ancient Aliens', type: 'long-form', note: 'Scheduled Wed 3PM' },
+        { title: 'Glass Rain Planet', type: 'short', note: 'On Drive' },
+    ],
+    posted: [
+        { title: 'Fermi Paradox', type: 'long-form' },
+        { title: 'Mars Colony', type: 'long-form' },
+        { title: 'Black Hole Sound', type: 'short' },
+        { title: 'Jupiter Fall', type: 'short' },
+        { title: 'Dark Matter', type: 'short' },
+        { title: 'Made of Stars', type: 'short' },
+    ]
+};
+
+function initKanban() {
+    Object.entries(PIPELINE_DATA).forEach(([stage, cards]) => {
+        const col = $(`kanban-${stage}`);
+        if (!col) return;
+        col.innerHTML = cards.map(c => `
+            <div class="kanban-card ${c.type}">
+                <div class="card-type">${c.type === 'long-form' ? '📹 Long' : '⚡ Short'}</div>
+                <div class="card-title">${c.title}</div>
+                ${c.note ? `<div style="font-size:10px;color:var(--text-muted);margin-top:3px;">${c.note}</div>` : ''}
+            </div>
+        `).join('') || '<div style="color:var(--text-muted);font-size:11px;text-align:center;padding:16px;">—</div>';
+    });
+}
+
 // === INIT ===
 async function init() {
     console.log('⚡ ClawdGod Command Center — Live Mode');
@@ -560,6 +649,8 @@ async function init() {
     
     // Initialize special features
     initWealthTracker();
+    initActivityFeed();
+    initKanban();
     initROI();
     initDragDrop();
     setTimeout(initAllCharts, 500);

@@ -862,3 +862,189 @@ body {
     background: var(--border);
     border-radius: 3px;
 }
+
+/* === AI AGENT ACTIVITY FEED === */
+.agent-feed-panel {
+    border-color: var(--accent) !important;
+    box-shadow: 0 0 20px var(--accent-glow);
+}
+
+.feed-controls {
+    display: flex;
+    gap: 8px;
+    margin-left: auto;
+    margin-right: 12px;
+}
+
+.feed-filter {
+    font-size: 11px;
+    padding: 3px 10px;
+    border-radius: 12px;
+    background: var(--bg-hover);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: 'Inter', sans-serif;
+}
+
+.feed-filter.active, .feed-filter:hover {
+    background: var(--accent);
+    color: white;
+}
+
+.agent-feed-stats {
+    display: flex;
+    gap: 24px;
+    justify-content: space-around;
+    padding: 8px 0;
+}
+
+.feed-stat {
+    text-align: center;
+}
+
+.feed-stat-value {
+    display: block;
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--accent);
+    font-family: 'JetBrains Mono', monospace;
+}
+
+.feed-stat-label {
+    font-size: 10px;
+    color: var(--text-muted);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.agent-feed-timeline {
+    max-height: 280px;
+    overflow-y: auto;
+    padding-right: 4px;
+}
+
+.feed-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+    animation: feedSlideIn 0.3s ease;
+}
+
+@keyframes feedSlideIn {
+    from { opacity: 0; transform: translateY(-8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.feed-item:last-child { border-bottom: none; }
+
+.feed-icon {
+    font-size: 18px;
+    min-width: 28px;
+    text-align: center;
+    line-height: 1.4;
+}
+
+.feed-body {
+    flex: 1;
+}
+
+.feed-action {
+    font-size: 13px;
+    color: var(--text-primary);
+    line-height: 1.4;
+}
+
+.feed-action strong {
+    color: var(--accent);
+}
+
+.feed-meta {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 2px;
+}
+
+.feed-time {
+    font-size: 11px;
+    color: var(--text-muted);
+    font-family: 'JetBrains Mono', monospace;
+    min-width: 50px;
+    text-align: right;
+}
+
+.feed-tag {
+    display: inline-block;
+    font-size: 9px;
+    padding: 1px 6px;
+    border-radius: 8px;
+    margin-left: 6px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+.feed-tag.content { background: var(--green-dim); color: var(--green); }
+.feed-tag.trading { background: var(--yellow-dim); color: var(--yellow); }
+.feed-tag.system { background: rgba(108,92,231,0.15); color: var(--accent); }
+
+/* === CONTENT PIPELINE KANBAN === */
+.kanban-board {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    padding-bottom: 8px;
+}
+
+.kanban-col {
+    min-width: 150px;
+    flex: 1;
+}
+
+.kanban-col-header {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-align: center;
+    padding: 8px;
+    background: var(--bg-hover);
+    border-radius: 8px 8px 0 0;
+    border-bottom: 2px solid var(--border-accent);
+}
+
+.kanban-cards {
+    min-height: 60px;
+    padding: 6px;
+}
+
+.kanban-card {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 8px 10px;
+    margin-bottom: 6px;
+    font-size: 12px;
+    color: var(--text-primary);
+    transition: all 0.2s;
+}
+
+.kanban-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-1px);
+}
+
+.kanban-card .card-type {
+    font-size: 9px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.kanban-card .card-title {
+    margin-top: 2px;
+    font-weight: 500;
+}
+
+.kanban-card.long-form { border-left: 3px solid var(--accent); }
+.kanban-card.short { border-left: 3px solid var(--green); }
