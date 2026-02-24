@@ -37,17 +37,17 @@ function kalshiRequest(path) {
 // Fallback data when no private key configured
 const FALLBACK = {
   balance: 12.05,
-  portfolio_value: 3.24,
-  total_value: 15.29,
-  total_pnl: -15.71,
+  portfolio_value: 3.05,
+  total_value: 15.10,
+  total_pnl: -15.90,
   positions: [
-    { ticker: 'KXWARSHNOM-26MAR01-T0', position: 3, yes_price: 39, exposure: 1.17, result: '' },
-    { ticker: 'KXHIGHNY', position: 5, yes_price: 1, exposure: 0.05, result: '' },
-    { ticker: 'KXHIGHNY', position: 5, yes_price: 1, exposure: 0.05, result: '' },
-    { ticker: 'KXBTCMINMON-BTC-26FEB28-6000000', position: 1, yes_price: 27, exposure: 0.27, result: '' },
-    { ticker: 'KXOAIANTH', position: 2, yes_price: 44, exposure: 0.88, result: '' },
-    { ticker: 'KXCABOUT', position: 4, yes_price: 17, exposure: 0.68, result: '' },
-    { ticker: 'KXCABLEAVE', position: 5, yes_price: 7, exposure: 0.35, result: '' },
+    { ticker: 'KXWARSHNOM-26MAR01-T0', position: 3, exposure: 0.84, result: '' },
+    { ticker: 'KXHIGHNY-26FEB24-T28', position: 5, exposure: 0.05, result: '' },
+    { ticker: 'KXHIGHNY-26FEB24-B28.5', position: 5, exposure: 0.05, result: '' },
+    { ticker: 'KXBTCMINMON-BTC-26FEB28-6000000', position: 1, exposure: 0.47, result: '' },
+    { ticker: 'KXOAIANTH-40-OAI', position: 2, exposure: 0.82, result: '' },
+    { ticker: 'KXCABOUT-29JAN-PBON', position: 4, exposure: 0.88, result: '' },
+    { ticker: 'KXCABLEAVE-26FEB-26FEB', position: 5, exposure: 1.00, result: '' },
   ]
 };
 
