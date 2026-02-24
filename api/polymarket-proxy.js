@@ -1,47 +1,51 @@
-// Polymarket CLOB API Proxy — routes through Vercel edge to bypass US geoblock
-// Security: requires X-Proxy-Key header
+const https = require('https');
 
-export const config = {
-  runtime: 'edge',
-  regions: ['cdg1', 'lhr1', 'arn1'], // Paris, London, Stockholm
-};
-
-export default async function handler(request) {
-  const proxyKey = request.headers.get('X-Proxy-Key');
-  if (proxyKey !== process.env.POLY_PROXY_KEY) {
-    return new Response('Unauthorized', { status: 401 });
+module.exports = (req, res) => {
+  const proxyKey = req.headers['x-proxy-key'];
+  if (proxyKey !== (process.env.POLY_PROXY_KEY || 'dylbot-poly-2026')) {
+    return res.status(401).json({ error: 'Unauthorized' });
   }
 
-  const url = new URL(request.url);
-  // Path after /api/polymarket-proxy/ gets forwarded to clob.polymarket.com
-  const targetPath = url.pathname.replace('/api/polymarket-proxy', '') || '/';
-  const targetUrl = `https://clob.polymarket.com${targetPath}${url.search}`;
+  // Get the target path from query param
+  const targetPath = req.query.path || '/';
+  const targetUrl = `https://clob.polymarket.com${targetPath}`;
 
-  // Forward all headers except host and our proxy key
-  const headers = new Headers(request.headers);
-  headers.delete('X-Proxy-Key');
-  headers.delete('host');
+  // Forward relevant headers
+  const headers = {};
+  const forwardHeaders = ['poly_address', 'poly_signature', 'poly_timestamp', 'poly_api_key', 'poly_passphrase', 'poly_nonce', 'content-type'];
+  for (const h of forwardHeaders) {
+    if (req.headers[h]) headers[h] = req.headers[h];
+  }
 
-  const init = {
-    method: request.method,
-    headers: headers,
+  const url = new URL(targetUrl);
+  const options = {
+    hostname: url.hostname,
+    path: url.pathname + url.search,
+    method: req.method,
+    headers: {
+      ...headers,
+      'User-Agent': '@polymarket/clob-client',
+    },
   };
 
-  if (request.method !== 'GET' && request.method !== 'HEAD') {
-    init.body = await request.text();
+  const proxyReq = https.request(options, (proxyRes) => {
+    let data = '';
+    proxyRes.on('data', (chunk) => data += chunk);
+    proxyRes.on('end', () => {
+      res.setHeader('Access-Control-Allow-Origin', '*');
+      res.setHeader('Access-Control-Allow-Headers', '*');
+      res.status(proxyRes.statusCode).send(data);
+    });
+  });
+
+  proxyReq.on('error', (e) => {
+    res.status(500).json({ error: e.message });
+  });
+
+  if (req.method === 'POST' || req.method === 'PUT') {
+    const body = typeof req.body === 'string' ? req.body : JSON.stringify(req.body);
+    proxyReq.write(body);
   }
 
-  try {
-    const response = await fetch(targetUrl, init);
-    const responseHeaders = new Headers(response.headers);
-    responseHeaders.set('Access-Control-Allow-Origin', '*');
-    
-    return new Response(response.body, {
-      status: response.status,
-      statusText: response.statusText,
-      headers: responseHeaders,
-    });
-  } catch (e) {
-    return new Response(JSON.stringify({ error: e.message }), { status: 500 });
-  }
-}
+  proxyReq.end();
+};
