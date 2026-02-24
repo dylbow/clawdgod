@@ -1,7 +1,31 @@
 // ClawdGod Dashboard — Live Data Engine
 
+// Auto-detect: use API if available, fall back to static JSON files
+const IS_LOCALHOST = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
 const API_BASE = '';
 const REFRESH_INTERVAL = 60000; // 1 minute
+
+// Static data fallback (auto-updated by Dylbot cron every 6 hours)
+const STATIC_DATA = {
+    kalshi: null,
+    youtube: null,
+    monday: null,
+    roi: null
+};
+
+async function smartFetch(endpoint, fallbackFile) {
+    // Try API first
+    try {
+        const res = await fetch(API_BASE + endpoint, { signal: AbortSignal.timeout(5000) });
+        if (res.ok) return await res.json();
+    } catch(e) {}
+    // Fall back to static JSON
+    try {
+        const res = await fetch(fallbackFile, { signal: AbortSignal.timeout(3000) });
+        if (res.ok) return await res.json();
+    } catch(e) {}
+    return null;
+}
 
 // === CLOCK ===
 function updateClock() {
@@ -46,9 +70,8 @@ function tickerToName(ticker) {
 // === KALSHI ===
 async function fetchKalshi() {
     try {
-        const res = await fetch(API_BASE + '/api/kalshi');
-        const data = await res.json();
-        if (data.error) throw new Error(data.error);
+        const data = await smartFetch('/api/kalshi', 'kalshi-data.json');
+        if (!data || data.error) throw new Error(data?.error || 'no data');
         
         const bal = data.balance || 0;
         const portVal = data.portfolio_value || 0;
@@ -98,8 +121,8 @@ async function fetchKalshi() {
 // === MONDAY.COM ===
 async function fetchMonday() {
     try {
-        const res = await fetch(API_BASE + '/api/monday');
-        const data = await res.json();
+        const data = await smartFetch('/api/monday', 'monday-data.json');
+        if (!data) throw new Error('no data');
         
         const taskDiv = $('monday-tasks');
         const tasks = data.tasks || [];
@@ -127,8 +150,8 @@ async function fetchMonday() {
 // === YOUTUBE ===
 async function fetchYouTube() {
     try {
-        const res = await fetch(API_BASE + '/api/youtube');
-        const data = await res.json();
+        const data = await smartFetch('/api/youtube', 'youtube-data.json');
+        if (!data) throw new Error('no data');
         
         if (data.subscribers) $('yt-subs').textContent = data.subscribers;
         if (data.views) $('yt-views').textContent = fmtK(data.views);
@@ -154,8 +177,8 @@ async function fetchYouTube() {
 // === NOTIFICATIONS ===
 async function fetchNotifications() {
     try {
-        const res = await fetch(API_BASE + '/api/notifications');
-        const data = await res.json();
+        const data = await smartFetch('/api/notifications', 'notif-data.json');
+        if (!data) throw new Error('no data');
         
         // Update email count badge
         const emailBadge = $('email-count');
@@ -255,8 +278,8 @@ function initWealthTracker() {
     const updateWealth = async () => {
         try {
             const [kalshi, yt] = await Promise.all([
-                fetch(API_BASE + '/api/kalshi').then(r => r.json()).catch(() => ({})),
-                fetch(API_BASE + '/api/youtube').then(r => r.json()).catch(() => ({}))
+                smartFetch('/api/kalshi', 'kalshi-data.json').catch(() => ({})),
+                smartFetch('/api/youtube', 'youtube-data.json').catch(() => ({}))
             ]);
             
             const kalshiTotal = (kalshi.balance || 0) + (kalshi.portfolio_value || 0);
@@ -395,8 +418,25 @@ function initAllCharts() {
 // === ROI TRACKER ===
 async function initROI() {
     try {
-        const res = await fetch(API_BASE + '/api/roi');
-        const data = await res.json();
+        let data = await smartFetch('/api/roi', 'roi-data.json');
+        if (!data) throw new Error('no data');
+        
+        // Handle raw format (costs/revenue objects) vs pre-calculated format
+        if (data.costs && !data.totalCosts) {
+            let totalCosts = 0;
+            const costBreakdown = {};
+            for (const [cat, items] of Object.entries(data.costs)) {
+                if (cat.startsWith('_')) continue;
+                const sum = (items || []).reduce((s, i) => s + (i.amount || 0), 0);
+                costBreakdown[cat.charAt(0).toUpperCase() + cat.slice(1).replace(/_/g, ' ')] = sum;
+                totalCosts += sum;
+            }
+            let totalRevenue = 0;
+            for (const [cat, items] of Object.entries(data.revenue || {})) {
+                totalRevenue += (items || []).reduce((s, i) => s + (i.amount || 0), 0);
+            }
+            data = { totalCosts, totalRevenue, costBreakdown };
+        }
         
         const costsEl = $('roi-costs');
         const revEl = $('roi-revenue');

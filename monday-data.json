@@ -1,0 +1,12 @@
+{
+  "tasks": [
+    {"name": "New task", "status": "", "priority": ""},
+    {"name": "New task", "status": "", "priority": ""},
+    {"name": "clawdgod", "status": "Working on it", "priority": "High"},
+    {"name": "youtube", "status": "Stuck", "priority": "High"},
+    {"name": "Empyre AI - Brand & Vision", "status": "Working on it", "priority": "High"},
+    {"name": "Instagram @theoretika Setup", "status": "", "priority": "Medium"},
+    {"name": "Script Video #1 - Human Disappearance", "status": "", "priority": "Medium"},
+    {"name": "Theoretika Logo & Banner Upload", "status": "", "priority": "Medium"}
+  ]
+}
