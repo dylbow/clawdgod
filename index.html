@@ -3,16 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ClawdGod — Command Center</title>
+    <title>EmpyreLab — The Lab</title>
     <link rel="stylesheet" href="style.css">
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧪</text></svg>">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.min.js"></script>
 </head>
 <body>
     <!-- Sidebar -->
     <nav class="sidebar" id="sidebar">
         <div class="sidebar-brand">
-            <span class="brand-icon">⚡</span>
-            <span class="brand-text">ClawdGod</span>
+            <span class="brand-icon">🧪</span>
+            <span class="brand-text">The Lab</span>
         </div>
         <div class="sidebar-nav">
             <a href="#home" class="nav-item active" data-page="home">
@@ -48,7 +49,7 @@
     <!-- Mobile header -->
     <header class="mobile-header">
         <button class="menu-toggle" id="menu-toggle">☰</button>
-        <span class="mobile-brand">⚡ ClawdGod</span>
+        <span class="mobile-brand">🧪 The Lab</span>
         <span class="mobile-clock" id="clock-mobile">--:--</span>
     </header>
 
@@ -57,7 +58,7 @@
         <!-- Page: Home -->
         <section class="page active" id="page-home">
             <div class="page-header">
-                <h1>Command Center</h1>
+                <h1>The Lab — Command Center</h1>
                 <span class="page-subtitle">Everything at a glance</span>
             </div>
 
@@ -403,10 +404,28 @@
             <h2 class="section-title">Expense Categories</h2>
             <div class="grid-3col" id="fin-categories"></div>
 
-            <h2 class="section-title">Cash Flow Trend</h2>
+            <h2 class="section-title">P&L Charts</h2>
+            <div class="grid-2col">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>📈 Kalshi Trading P&L</h3>
+                    </div>
+                    <canvas class="chart-area" id="chart-kalshi-pnl"></canvas>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <h3>📺 YouTube Revenue Trend</h3>
+                    </div>
+                    <canvas class="chart-area" id="chart-youtube-revenue"></canvas>
+                </div>
+            </div>
+            
+            <h2 class="section-title">ROI Tracker</h2>
             <div class="card">
-                <canvas class="chart-area" id="chart-cashflow"></canvas>
-                <div class="chart-placeholder-text">Monthly cash flow trend</div>
+                <div class="card-header">
+                    <h3>💡 Investment Recovery Progress</h3>
+                </div>
+                <canvas class="chart-area" id="chart-roi-tracker"></canvas>
             </div>
 
             <h2 class="section-title">Sankey Diagram</h2>

@@ -384,18 +384,171 @@ function drawSparkline(canvasId, data, options = {}) {
 }
 
 function initCharts() {
+    // Keep sparklines for channel cards
     drawSparkline('spark-theo', [50, 80, 120, 200, 350, 500, 600, 942], { color: 'rgb(99, 102, 241)', min: 0 });
     drawSparkline('spark-lofi', [0], { color: 'rgb(236, 72, 153)', min: 0 });
     drawSparkline('spark-kalshi', [0, -0.82, -0.60, -0.40, 0.10, 0.51], { color: 'rgb(52, 211, 153)', min: -1 });
 
-    // Cash flow chart placeholder
-    drawSparkline('chart-cashflow', [-599, -650, -680, -700, -718, -718], { color: 'rgb(248, 113, 113)' });
+    // Initialize P&L Charts with Chart.js
+    setTimeout(initPnLCharts, 300);
+}
+
+function initPnLCharts() {
+    // Kalshi P&L Chart
+    const kalshiCtx = document.getElementById('chart-kalshi-pnl');
+    if (kalshiCtx && typeof Chart !== 'undefined') {
+        new Chart(kalshiCtx, {
+            type: 'line',
+            data: {
+                labels: ['Feb 9', 'Feb 12', 'Feb 15', 'Feb 18', 'Feb 21', 'Feb 24'],
+                datasets: [{
+                    label: 'P&L ($)',
+                    data: [0, -5.25, -8.40, -12.60, -15.20, -15.84],
+                    borderColor: 'rgb(52, 211, 153)',
+                    backgroundColor: 'rgba(52, 211, 153, 0.1)',
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: 'rgba(26, 29, 40, 0.95)',
+                        titleColor: '#e8eaed',
+                        bodyColor: '#e8eaed',
+                        borderColor: 'rgba(255, 255, 255, 0.1)',
+                        borderWidth: 1
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                        ticks: { color: '#9ca3af' }
+                    },
+                    y: {
+                        grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                        ticks: { color: '#9ca3af', callback: value => '$' + value.toFixed(2) }
+                    }
+                }
+            }
+        });
+    }
+
+    // YouTube Revenue Chart  
+    const youtubeCtx = document.getElementById('chart-youtube-revenue');
+    if (youtubeCtx && typeof Chart !== 'undefined') {
+        new Chart(youtubeCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                datasets: [{
+                    label: 'Revenue ($)',
+                    data: [0, 0, 0, 0, 0, 0], // Not monetized yet
+                    backgroundColor: 'rgba(96, 165, 250, 0.6)',
+                    borderColor: 'rgb(96, 165, 250)',
+                    borderWidth: 1
+                }, {
+                    label: 'Views',
+                    data: [1200, 2800, 4100, 6200, 7500, 8634],
+                    type: 'line',
+                    borderColor: 'rgb(167, 139, 250)',
+                    backgroundColor: 'rgba(167, 139, 250, 0.1)',
+                    yAxisID: 'y1',
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: true, labels: { color: '#e8eaed' } },
+                    tooltip: {
+                        backgroundColor: 'rgba(26, 29, 40, 0.95)',
+                        titleColor: '#e8eaed',
+                        bodyColor: '#e8eaed',
+                        borderColor: 'rgba(255, 255, 255, 0.1)',
+                        borderWidth: 1
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                        ticks: { color: '#9ca3af' }
+                    },
+                    y: {
+                        type: 'linear',
+                        position: 'left',
+                        grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                        ticks: { color: '#9ca3af', callback: value => '$' + value.toFixed(2) }
+                    },
+                    y1: {
+                        type: 'linear',
+                        position: 'right',
+                        grid: { drawOnChartArea: false },
+                        ticks: { color: '#9ca3af' }
+                    }
+                }
+            }
+        });
+    }
+
+    // ROI Tracker Chart
+    const roiCtx = document.getElementById('chart-roi-tracker');
+    if (roiCtx && typeof Chart !== 'undefined') {
+        new Chart(roiCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Costs', 'Break-even Target'],
+                datasets: [{
+                    data: [718, 282], // $718 spent, need $282 more to break even at $1000
+                    backgroundColor: [
+                        'rgba(248, 113, 113, 0.8)',
+                        'rgba(52, 211, 153, 0.3)'
+                    ],
+                    borderColor: [
+                        'rgb(248, 113, 113)',
+                        'rgb(52, 211, 153)'
+                    ],
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: { color: '#e8eaed', padding: 20 }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(26, 29, 40, 0.95)',
+                        titleColor: '#e8eaed',
+                        bodyColor: '#e8eaed',
+                        borderColor: 'rgba(255, 255, 255, 0.1)',
+                        borderWidth: 1,
+                        callbacks: {
+                            label: function(context) {
+                                const percentage = ((context.parsed / 1000) * 100).toFixed(1);
+                                return context.label + ': $' + context.parsed + ' (' + percentage + '%)';
+                            }
+                        }
+                    }
+                },
+                cutout: '60%'
+            }
+        });
+    }
 }
 
 // ========== INIT ==========
 
 async function init() {
-    console.log('⚡ ClawdGod v4 — Multi-page Dashboard');
+    console.log('🧪 EmpyreLab — The Lab Dashboard');
 
     renderFeed('all');
     initFeedFilters();
