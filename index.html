@@ -5,417 +5,520 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ClawdGod — Command Center</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
 </head>
 <body>
-    <div class="dashboard">
-        <!-- Header -->
-        <header class="header">
-            <div class="header-left">
-                <span class="logo">⚡</span>
-                <h1>ClawdGod</h1>
-                <span class="subtitle">Command Center</span>
-            </div>
-            <div class="header-right">
-                <div class="status-indicator online"></div>
-                <span class="status-text">SYSTEMS ONLINE</span>
-                <span class="clock" id="clock"></span>
-            </div>
-        </header>
-
-        <!-- Main Grid -->
-        <div class="grid" id="dashboard-grid">
-            <!-- Empyre Wealth Tracker (TOP) -->
-            <div class="panel wealth-panel draggable" data-panel="empyre" style="grid-column: 1 / -1;">
-                <div class="panel-header drag-handle">
-                    <h2>👑 Empyre Tracker</h2>
-                    <span class="badge live">LIVE</span>
-                </div>
-                <div class="panel-body">
-                    <div id="wealth-tracker"></div>
-                    <div class="divider"></div>
-                    <h3>Total Revenue Trend</h3>
-                    <div class="chart-container">
-                        <canvas id="total-chart"></canvas>
-                    </div>
-                </div>
-            </div>
-
-            <!-- AI Agent Activity Feed (NEW — Empyre flagship feature) -->
-            <div class="panel agent-feed-panel draggable" data-panel="agent-feed" style="grid-column: 1 / -1;">
-                <div class="panel-header drag-handle">
-                    <h2>🤖 AI Agent Activity Feed</h2>
-                    <div class="feed-controls">
-                        <span class="feed-filter active" data-filter="all">All</span>
-                        <span class="feed-filter" data-filter="content">Content</span>
-                        <span class="feed-filter" data-filter="trading">Trading</span>
-                        <span class="feed-filter" data-filter="system">System</span>
-                    </div>
-                    <span class="badge live">LIVE</span>
-                </div>
-                <div class="panel-body">
-                    <div class="agent-feed-stats">
-                        <div class="feed-stat">
-                            <span class="feed-stat-value" id="feed-actions-today">0</span>
-                            <span class="feed-stat-label">ACTIONS TODAY</span>
-                        </div>
-                        <div class="feed-stat">
-                            <span class="feed-stat-value" id="feed-videos-made">0</span>
-                            <span class="feed-stat-label">VIDEOS MADE</span>
-                        </div>
-                        <div class="feed-stat">
-                            <span class="feed-stat-value" id="feed-trades-placed">0</span>
-                            <span class="feed-stat-label">TRADES PLACED</span>
-                        </div>
-                        <div class="feed-stat">
-                            <span class="feed-stat-value" id="feed-images-gen">0</span>
-                            <span class="feed-stat-label">IMAGES GEN'D</span>
-                        </div>
-                        <div class="feed-stat">
-                            <span class="feed-stat-value" id="feed-cost-today">$0</span>
-                            <span class="feed-stat-label">COST TODAY</span>
-                        </div>
-                    </div>
-                    <div class="divider"></div>
-                    <div class="agent-feed-timeline" id="agent-feed-timeline">
-                        <!-- Populated by JS -->
-                    </div>
-                </div>
-            </div>
-
-            <!-- Content Pipeline Kanban (NEW) -->
-            <div class="panel pipeline-kanban-panel draggable" data-panel="pipeline" style="grid-column: 1 / -1;">
-                <div class="panel-header drag-handle">
-                    <h2>📹 Content Pipeline</h2>
-                    <span class="badge">KANBAN</span>
-                </div>
-                <div class="panel-body">
-                    <div class="kanban-board" id="kanban-board">
-                        <div class="kanban-col">
-                            <div class="kanban-col-header">📝 Script</div>
-                            <div class="kanban-cards" id="kanban-script"></div>
-                        </div>
-                        <div class="kanban-col">
-                            <div class="kanban-col-header">🎨 Images</div>
-                            <div class="kanban-cards" id="kanban-images"></div>
-                        </div>
-                        <div class="kanban-col">
-                            <div class="kanban-col-header">🎙️ Voiceover</div>
-                            <div class="kanban-cards" id="kanban-voice"></div>
-                        </div>
-                        <div class="kanban-col">
-                            <div class="kanban-col-header">🔧 Assembly</div>
-                            <div class="kanban-cards" id="kanban-assembly"></div>
-                        </div>
-                        <div class="kanban-col">
-                            <div class="kanban-col-header">👀 Review</div>
-                            <div class="kanban-cards" id="kanban-review"></div>
-                        </div>
-                        <div class="kanban-col">
-                            <div class="kanban-col-header">✅ Posted</div>
-                            <div class="kanban-cards" id="kanban-posted"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Kalshi Trading Panel -->
-            <div class="panel kalshi-panel draggable" data-panel="kalshi">
-                <div class="panel-header drag-handle">
-                    <h2>🌡️ Kalshi Trading</h2>
-                    <span class="badge live">LIVE</span>
-                </div>
-                <div class="panel-body">
-                    <div class="stats-row">
-                        <div class="stat">
-                            <span class="stat-label">CASH</span>
-                            <span class="stat-value" id="kalshi-balance">—</span>
-                        </div>
-                        <div class="stat">
-                            <span class="stat-label">POSITIONS</span>
-                            <span class="stat-value" id="kalshi-portfolio">—</span>
-                        </div>
-                        <div class="stat">
-                            <span class="stat-label">TOTAL</span>
-                            <span class="stat-value accent" id="kalshi-total">—</span>
-                        </div>
-                        <div class="stat">
-                            <span class="stat-label">P&L</span>
-                            <span class="stat-value" id="kalshi-pnl">—</span>
-                        </div>
-                    </div>
-                    <div class="divider"></div>
-                    <h3>Open Positions</h3>
-                    <div class="positions" id="kalshi-positions">
-                        <div class="position">
-                            <span class="position-name">CHI below 57°F today</span>
-                            <span class="position-detail">3× YES @ 28¢</span>
-                            <span class="position-pnl positive">+$2.28 if YES</span>
-                        </div>
-                        <div class="position">
-                            <span class="position-name">NYC below 40°F today</span>
-                            <span class="position-detail">10× YES @ 1¢</span>
-                            <span class="position-pnl positive">+$9.90 if YES</span>
-                        </div>
-                        <div class="position">
-                            <span class="position-name">CHI above 45°F tmrw</span>
-                            <span class="position-detail">9× YES @ 9¢</span>
-                            <span class="position-pnl positive">+$8.19 if YES</span>
-                        </div>
-                        <div class="position">
-                            <span class="position-name">DEN above 41°F today</span>
-                            <span class="position-detail">10× YES @ 2¢</span>
-                            <span class="position-pnl resting">⏳ resting</span>
-                        </div>
-                        <div class="position">
-                            <span class="position-name">Cabinet exit before Mar</span>
-                            <span class="position-detail">5× YES @ 20¢</span>
-                            <span class="position-pnl neutral">open</span>
-                        </div>
-                        <div class="position">
-                            <span class="position-name">Pam Bondi first out</span>
-                            <span class="position-detail">4× YES @ 22¢</span>
-                            <span class="position-pnl neutral">open</span>
-                        </div>
-                        <div class="position">
-                            <span class="position-name">OpenAI IPO before Anthropic</span>
-                            <span class="position-detail">2× YES @ 41¢</span>
-                            <span class="position-pnl neutral">open</span>
-                        </div>
-                    </div>
-                    <div class="divider"></div>
-                    <h3>P&L Trend</h3>
-                    <div class="chart-container mini">
-                        <canvas id="kalshi-chart"></canvas>
-                    </div>
-                    <div class="divider"></div>
-                    <h3>🔥 Scanner Alerts</h3>
-                    <div class="scanner-alerts" id="scanner-alerts">
-                        <div class="alert hot">
-                            <span class="alert-edge">+44%</span>
-                            <span class="alert-desc">Denver above 41°F — NOAA says 41°F, market 6%</span>
-                        </div>
-                        <div class="alert hot">
-                            <span class="alert-edge">+30%</span>
-                            <span class="alert-desc">NYC NOT 40.5-42.5°F — forecast 42°F, bracket overpriced</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Theoretika YouTube Panel -->
-            <div class="panel theoretika-panel draggable" data-panel="theoretika">
-                <div class="panel-header drag-handle">
-                    <h2>🎬 Theoretika</h2>
-                    <span class="badge">YouTube</span>
-                </div>
-                <div class="panel-body">
-                    <div class="stats-row">
-                        <div class="stat">
-                            <span class="stat-label">SUBSCRIBERS</span>
-                            <span class="stat-value" id="yt-subs">—</span>
-                        </div>
-                        <div class="stat">
-                            <span class="stat-label">TOTAL VIEWS</span>
-                            <span class="stat-value" id="yt-views">—</span>
-                        </div>
-                        <div class="stat">
-                            <span class="stat-label">VIDEOS</span>
-                            <span class="stat-value" id="yt-videos">10</span>
-                        </div>
-                    </div>
-                    <div class="divider"></div>
-                    <h3>Video Pipeline</h3>
-                    <div class="pipeline">
-                        <div class="pipeline-item done">
-                            <span class="pip-status">✅</span>
-                            <span class="pip-name">Nuclear Bombs</span>
-                            <span class="pip-stage">POSTED</span>
-                        </div>
-                        <div class="pipeline-item done">
-                            <span class="pip-status">✅</span>
-                            <span class="pip-name">Black Hole</span>
-                            <span class="pip-stage">REVIEW</span>
-                        </div>
-                        <div class="pipeline-item active">
-                            <span class="pip-status">🔄</span>
-                            <span class="pip-name">Mars Colony</span>
-                            <span class="pip-stage">IMAGES DONE</span>
-                        </div>
-                        <div class="pipeline-item pending">
-                            <span class="pip-status">📋</span>
-                            <span class="pip-name">Ocean Depths</span>
-                            <span class="pip-stage">NEEDS SCRIPT</span>
-                        </div>
-                        <div class="pipeline-item active">
-                            <span class="pip-status">🔄</span>
-                            <span class="pip-name">Magnetic Field</span>
-                            <span class="pip-stage">1/30 IMAGES</span>
-                        </div>
-                    </div>
-                    <div class="divider"></div>
-                    <h3>Views Trend</h3>
-                    <div class="chart-container mini">
-                        <canvas id="yt-chart"></canvas>
-                    </div>
-                    <div class="divider"></div>
-                    <h3>Shorts</h3>
-                    <div class="pipeline">
-                        <div class="pipeline-item done">
-                            <span class="pip-status">✅</span>
-                            <span class="pip-name">Nuclear Explosion (52s)</span>
-                            <span class="pip-stage">APPROVED</span>
-                        </div>
-                        <div class="pipeline-item done">
-                            <span class="pip-status">✅</span>
-                            <span class="pip-name">Sun Disappeared (69s)</span>
-                            <span class="pip-stage">APPROVED</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Monday.com Tasks Panel -->
-            <div class="panel tasks-panel draggable" data-panel="monday">
-                <div class="panel-header drag-handle">
-                    <h2>📋 Empyre HQ</h2>
-                    <span class="badge">Monday.com</span>
-                </div>
-                <div class="panel-body">
-                    <div class="task-list" id="monday-tasks">
-                        <div class="task priority-high">
-                            <span class="task-priority">🔴</span>
-                            <span class="task-name">Lofi Video 1 — Assemble & Ship</span>
-                            <span class="task-status status-working">IN PROGRESS</span>
-                        </div>
-                        <div class="task priority-high">
-                            <span class="task-priority">🔴</span>
-                            <span class="task-name">ClawdGod Dashboard v1</span>
-                            <span class="task-status status-working">IN PROGRESS</span>
-                        </div>
-                        <div class="task priority-high">
-                            <span class="task-priority">🔴</span>
-                            <span class="task-name">Fiverr Gig Images</span>
-                            <span class="task-status status-todo">TO DO</span>
-                        </div>
-                        <div class="task priority-med">
-                            <span class="task-priority">🟡</span>
-                            <span class="task-name">Black Hole Video — Dylan Review</span>
-                            <span class="task-status status-waiting">WAITING</span>
-                        </div>
-                        <div class="task priority-med">
-                            <span class="task-priority">🟡</span>
-                            <span class="task-name">Mars Video — Assembly</span>
-                            <span class="task-status status-todo">TO DO</span>
-                        </div>
-                        <div class="task priority-low">
-                            <span class="task-priority">🟢</span>
-                            <span class="task-name">Kalshi Weather Scanner — Auto-trade</span>
-                            <span class="task-status status-done">DONE</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Notifications Panel -->
-            <div class="panel notifications-panel draggable" data-panel="notifications">
-                <div class="panel-header drag-handle">
-                    <h2>🔔 Notifications</h2>
-                    <div class="notif-badges">
-                        <span class="notif-badge email-badge" id="email-count" title="Unread emails">📧 —</span>
-                        <span class="notif-badge tg-badge" title="Telegram">💬 Active</span>
-                    </div>
-                </div>
-                <div class="panel-body">
-                    <div class="notif-tabs">
-                        <button class="notif-tab active" data-tab="all">All</button>
-                        <button class="notif-tab" data-tab="email">Email</button>
-                        <button class="notif-tab" data-tab="telegram">Telegram</button>
-                    </div>
-                    <div class="notif-list" id="notif-list">
-                        <div class="notif-empty">Loading notifications...</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Dylbot Status Panel -->
-            <div class="panel status-panel draggable" data-panel="dylbot">
-                <div class="panel-header drag-handle">
-                    <h2>🤖 Dylbot Status</h2>
-                    <span class="badge live">ACTIVE</span>
-                </div>
-                <div class="panel-body">
-                    <div class="agent-status">
-                        <div class="heartbeat">
-                            <span class="pulse"></span>
-                            <span class="agent-label">Agent Heartbeat</span>
-                        </div>
-                    </div>
-                    <div class="stats-row">
-                        <div class="stat">
-                            <span class="stat-label">UPTIME</span>
-                            <span class="stat-value" id="uptime">—</span>
-                        </div>
-                        <div class="stat">
-                            <span class="stat-label">TRADES TODAY</span>
-                            <span class="stat-value accent">4</span>
-                        </div>
-                        <div class="stat">
-                            <span class="stat-label">SCANNER</span>
-                            <span class="stat-value green">ACTIVE</span>
-                        </div>
-                    </div>
-                    <div class="divider"></div>
-                    <h3>Activity Log</h3>
-                    <div class="activity-log" id="activity-log">
-                        <div class="log-entry">
-                            <span class="log-time">09:36</span>
-                            <span class="log-msg">4 weather trades placed — $1.74 risked, $22 max payout</span>
-                        </div>
-                        <div class="log-entry">
-                            <span class="log-time">09:25</span>
-                            <span class="log-msg">Morning brief delivered — scanner found 15 opportunities</span>
-                        </div>
-                        <div class="log-entry">
-                            <span class="log-time">00:02</span>
-                            <span class="log-msg">Weather Scanner v1 built & deployed</span>
-                        </div>
-                        <div class="log-entry">
-                            <span class="log-time">23:47</span>
-                            <span class="log-msg">Kalshi market scan — no strong short-term trades (crypto/political)</span>
-                        </div>
-                    </div>
-                </div>
+    <!-- Sidebar -->
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-brand">
+            <span class="brand-icon">⚡</span>
+            <span class="brand-text">ClawdGod</span>
+        </div>
+        <div class="sidebar-nav">
+            <a href="#home" class="nav-item active" data-page="home">
+                <span class="nav-icon">🏠</span>
+                <span class="nav-label">Command Center</span>
+            </a>
+            <a href="#channels" class="nav-item" data-page="channels">
+                <span class="nav-icon">📊</span>
+                <span class="nav-label">Channels & Revenue</span>
+            </a>
+            <a href="#tasks" class="nav-item" data-page="tasks">
+                <span class="nav-icon">✅</span>
+                <span class="nav-label">Tasks & Pipeline</span>
+            </a>
+            <a href="#finances" class="nav-item" data-page="finances">
+                <span class="nav-icon">💰</span>
+                <span class="nav-label">Finances</span>
+            </a>
+            <a href="#agent" class="nav-item" data-page="agent">
+                <span class="nav-icon">🤖</span>
+                <span class="nav-label">Agent Console</span>
+            </a>
+        </div>
+        <div class="sidebar-footer">
+            <div class="sidebar-clock" id="clock">--:--:-- MST</div>
+            <div class="sidebar-status">
+                <span class="status-dot online"></span>
+                <span class="status-text">Dylbot Online</span>
             </div>
         </div>
-    </div>
+    </nav>
 
-    <!-- ROI Tracker (corner widget) -->
-    <div class="roi-widget" id="roi-widget">
-        <div class="roi-header">
-            <span class="roi-title">💸 DYLBOT ROI</span>
-            <span class="roi-toggle" id="roi-toggle">▼</span>
-        </div>
-        <div class="roi-body" id="roi-body">
-            <div class="roi-row costs">
-                <span class="roi-label">TOTAL INVESTED</span>
-                <span class="roi-value" id="roi-costs">—</span>
+    <!-- Mobile header -->
+    <header class="mobile-header">
+        <button class="menu-toggle" id="menu-toggle">☰</button>
+        <span class="mobile-brand">⚡ ClawdGod</span>
+        <span class="mobile-clock" id="clock-mobile">--:--</span>
+    </header>
+
+    <!-- Main content -->
+    <main class="main-content" id="main-content">
+        <!-- Page: Home -->
+        <section class="page active" id="page-home">
+            <div class="page-header">
+                <h1>Command Center</h1>
+                <span class="page-subtitle">Everything at a glance</span>
             </div>
-            <div class="roi-row revenue">
-                <span class="roi-label">TOTAL EARNED</span>
-                <span class="roi-value" id="roi-revenue">—</span>
+
+            <div class="stats-row">
+                <div class="stat-card">
+                    <div class="stat-label">Total Revenue</div>
+                    <div class="stat-value green" id="home-revenue">$0.00</div>
+                    <div class="stat-delta">lifetime</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Total Subscribers</div>
+                    <div class="stat-value blue" id="home-subs">—</div>
+                    <div class="stat-delta">all channels</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Active Trades</div>
+                    <div class="stat-value purple" id="home-trades">—</div>
+                    <div class="stat-delta">Kalshi positions</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Agent Status</div>
+                    <div class="stat-value" id="home-agent-status">
+                        <span class="status-dot online"></span> Online
+                    </div>
+                    <div class="stat-delta" id="home-uptime">uptime: 00:00:00</div>
+                </div>
             </div>
-            <div class="roi-divider"></div>
-            <div class="roi-row net">
-                <span class="roi-label" id="roi-net-label">NET</span>
-                <span class="roi-value" id="roi-net">—</span>
+
+            <div class="grid-2col">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>🤖 Agent Activity Feed</h3>
+                        <div class="feed-filters">
+                            <button class="chip active" data-filter="all">All</button>
+                            <button class="chip" data-filter="content">Content</button>
+                            <button class="chip" data-filter="trading">Trading</button>
+                            <button class="chip" data-filter="system">System</button>
+                        </div>
+                    </div>
+                    <div class="feed-list" id="home-feed"></div>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <h3>🔔 Alerts & Notifications</h3>
+                    </div>
+                    <div class="alerts-list" id="home-alerts">
+                        <div class="alert-item info">
+                            <span class="alert-icon">📧</span>
+                            <div class="alert-body">
+                                <div class="alert-text">Check email for important updates</div>
+                                <div class="alert-time">Periodic reminder</div>
+                            </div>
+                        </div>
+                        <div class="alert-item warning">
+                            <span class="alert-icon">⚠️</span>
+                            <div class="alert-body">
+                                <div class="alert-text">YouTube monetization: 930 subs to go</div>
+                                <div class="alert-time">Need 1,000 subscribers</div>
+                            </div>
+                        </div>
+                        <div class="alert-item success">
+                            <span class="alert-icon">✅</span>
+                            <div class="alert-body">
+                                <div class="alert-text">Dashboard v4 deployed</div>
+                                <div class="alert-time">Just now</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="roi-bar-container">
-                <div class="roi-bar" id="roi-bar"></div>
+        </section>
+
+        <!-- Page: Channels -->
+        <section class="page" id="page-channels">
+            <div class="page-header">
+                <h1>Channels & Revenue</h1>
+                <span class="page-subtitle">All income streams</span>
             </div>
-            <div class="roi-breakdown" id="roi-breakdown"></div>
-        </div>
-    </div>
+
+            <div class="stats-row">
+                <div class="stat-card accent-green">
+                    <div class="stat-label">Total Revenue</div>
+                    <div class="stat-value green" id="ch-total-rev">$0.00</div>
+                    <div class="stat-delta">all-time</div>
+                </div>
+                <div class="stat-card accent-blue">
+                    <div class="stat-label">Total Subscribers</div>
+                    <div class="stat-value blue" id="ch-total-subs">—</div>
+                    <div class="stat-delta">all channels</div>
+                </div>
+                <div class="stat-card accent-purple">
+                    <div class="stat-label">Total Views</div>
+                    <div class="stat-value purple" id="ch-total-views">—</div>
+                    <div class="stat-delta">all channels</div>
+                </div>
+            </div>
+
+            <h2 class="section-title">YouTube Channels</h2>
+            <div class="grid-2col">
+                <div class="card channel-card">
+                    <div class="channel-header">
+                        <div class="channel-avatar theoretika">T</div>
+                        <div>
+                            <h3>Theoretika</h3>
+                            <span class="channel-tag">Science & Space</span>
+                        </div>
+                    </div>
+                    <div class="channel-stats">
+                        <div class="ch-stat">
+                            <span class="ch-stat-val" id="ch-theo-subs">—</span>
+                            <span class="ch-stat-label">Subscribers</span>
+                        </div>
+                        <div class="ch-stat">
+                            <span class="ch-stat-val" id="ch-theo-views">—</span>
+                            <span class="ch-stat-label">Views</span>
+                        </div>
+                        <div class="ch-stat">
+                            <span class="ch-stat-val" id="ch-theo-hours">—</span>
+                            <span class="ch-stat-label">Watch Hrs</span>
+                        </div>
+                        <div class="ch-stat">
+                            <span class="ch-stat-val" id="ch-theo-rev">$0</span>
+                            <span class="ch-stat-label">Revenue</span>
+                        </div>
+                    </div>
+                    <canvas class="sparkline" id="spark-theo"></canvas>
+                </div>
+
+                <div class="card channel-card">
+                    <div class="channel-header">
+                        <div class="channel-avatar lofi">♪</div>
+                        <div>
+                            <h3>lil lofi guy</h3>
+                            <span class="channel-tag">Lofi Music</span>
+                        </div>
+                    </div>
+                    <div class="channel-stats">
+                        <div class="ch-stat">
+                            <span class="ch-stat-val">0</span>
+                            <span class="ch-stat-label">Subscribers</span>
+                        </div>
+                        <div class="ch-stat">
+                            <span class="ch-stat-val">0</span>
+                            <span class="ch-stat-label">Views</span>
+                        </div>
+                        <div class="ch-stat">
+                            <span class="ch-stat-val">0</span>
+                            <span class="ch-stat-label">Watch Hrs</span>
+                        </div>
+                        <div class="ch-stat">
+                            <span class="ch-stat-val">$0</span>
+                            <span class="ch-stat-label">Revenue</span>
+                        </div>
+                    </div>
+                    <canvas class="sparkline" id="spark-lofi"></canvas>
+                </div>
+
+                <div class="card channel-card">
+                    <div class="channel-header">
+                        <div class="channel-avatar seedance">🌱</div>
+                        <div>
+                            <h3>Seedance</h3>
+                            <span class="channel-tag">Coming Soon</span>
+                        </div>
+                    </div>
+                    <div class="channel-stats">
+                        <div class="ch-stat">
+                            <span class="ch-stat-val">—</span>
+                            <span class="ch-stat-label">Subscribers</span>
+                        </div>
+                        <div class="ch-stat">
+                            <span class="ch-stat-val">—</span>
+                            <span class="ch-stat-label">Views</span>
+                        </div>
+                        <div class="ch-stat">
+                            <span class="ch-stat-val">—</span>
+                            <span class="ch-stat-label">Watch Hrs</span>
+                        </div>
+                        <div class="ch-stat">
+                            <span class="ch-stat-val">$0</span>
+                            <span class="ch-stat-label">Revenue</span>
+                        </div>
+                    </div>
+                    <canvas class="sparkline" id="spark-seedance"></canvas>
+                </div>
+
+                <div class="card channel-card">
+                    <div class="channel-header">
+                        <div class="channel-avatar empyre">E</div>
+                        <div>
+                            <h3>Empyre</h3>
+                            <span class="channel-tag">Brand / Parent</span>
+                        </div>
+                    </div>
+                    <div class="channel-stats">
+                        <div class="ch-stat">
+                            <span class="ch-stat-val">—</span>
+                            <span class="ch-stat-label">Subscribers</span>
+                        </div>
+                        <div class="ch-stat">
+                            <span class="ch-stat-val">—</span>
+                            <span class="ch-stat-label">Views</span>
+                        </div>
+                        <div class="ch-stat">
+                            <span class="ch-stat-val">—</span>
+                            <span class="ch-stat-label">Watch Hrs</span>
+                        </div>
+                        <div class="ch-stat">
+                            <span class="ch-stat-val">$0</span>
+                            <span class="ch-stat-label">Revenue</span>
+                        </div>
+                    </div>
+                    <canvas class="sparkline" id="spark-empyre"></canvas>
+                </div>
+            </div>
+
+            <h2 class="section-title">Kalshi Trading</h2>
+            <div class="card kalshi-card">
+                <div class="card-header">
+                    <h3>📈 Kalshi P&L</h3>
+                </div>
+                <div class="kalshi-stats">
+                    <div class="ch-stat">
+                        <span class="ch-stat-val" id="k-balance">—</span>
+                        <span class="ch-stat-label">Balance</span>
+                    </div>
+                    <div class="ch-stat">
+                        <span class="ch-stat-val" id="k-portfolio">—</span>
+                        <span class="ch-stat-label">Portfolio</span>
+                    </div>
+                    <div class="ch-stat">
+                        <span class="ch-stat-val" id="k-total">—</span>
+                        <span class="ch-stat-label">Total Value</span>
+                    </div>
+                    <div class="ch-stat">
+                        <span class="ch-stat-val" id="k-pnl">—</span>
+                        <span class="ch-stat-label">Total P&L</span>
+                    </div>
+                </div>
+                <canvas class="sparkline tall" id="spark-kalshi"></canvas>
+                <div class="positions-list" id="k-positions"></div>
+            </div>
+        </section>
+
+        <!-- Page: Tasks -->
+        <section class="page" id="page-tasks">
+            <div class="page-header">
+                <h1>Tasks & Pipeline</h1>
+                <span class="page-subtitle">Content production & task management</span>
+            </div>
+
+            <h2 class="section-title">Content Pipeline</h2>
+            <div class="kanban-board">
+                <div class="kanban-col">
+                    <div class="kanban-col-header">
+                        <span class="kanban-dot" style="background:#a78bfa"></span>
+                        Script
+                        <span class="kanban-count" id="kc-script">0</span>
+                    </div>
+                    <div class="kanban-cards" id="kanban-script"></div>
+                </div>
+                <div class="kanban-col">
+                    <div class="kanban-col-header">
+                        <span class="kanban-dot" style="background:#60a5fa"></span>
+                        Images
+                        <span class="kanban-count" id="kc-images">0</span>
+                    </div>
+                    <div class="kanban-cards" id="kanban-images"></div>
+                </div>
+                <div class="kanban-col">
+                    <div class="kanban-col-header">
+                        <span class="kanban-dot" style="background:#34d399"></span>
+                        Voiceover
+                        <span class="kanban-count" id="kc-voice">0</span>
+                    </div>
+                    <div class="kanban-cards" id="kanban-voice"></div>
+                </div>
+                <div class="kanban-col">
+                    <div class="kanban-col-header">
+                        <span class="kanban-dot" style="background:#fbbf24"></span>
+                        Assembly
+                        <span class="kanban-count" id="kc-assembly">0</span>
+                    </div>
+                    <div class="kanban-cards" id="kanban-assembly"></div>
+                </div>
+                <div class="kanban-col">
+                    <div class="kanban-col-header">
+                        <span class="kanban-dot" style="background:#f97316"></span>
+                        Review
+                        <span class="kanban-count" id="kc-review">0</span>
+                    </div>
+                    <div class="kanban-cards" id="kanban-review"></div>
+                </div>
+                <div class="kanban-col">
+                    <div class="kanban-col-header">
+                        <span class="kanban-dot" style="background:#22c55e"></span>
+                        Posted
+                        <span class="kanban-count" id="kc-posted">0</span>
+                    </div>
+                    <div class="kanban-cards" id="kanban-posted"></div>
+                </div>
+            </div>
+
+            <h2 class="section-title">Tasks</h2>
+            <div class="card">
+                <div class="task-list" id="task-list"></div>
+            </div>
+        </section>
+
+        <!-- Page: Finances -->
+        <section class="page" id="page-finances">
+            <div class="page-header">
+                <h1>Finances</h1>
+                <span class="page-subtitle">Costs, revenue & ROI</span>
+            </div>
+
+            <div class="stats-row">
+                <div class="stat-card accent-red">
+                    <div class="stat-label">Total Costs</div>
+                    <div class="stat-value red" id="fin-costs">—</div>
+                    <div class="stat-delta">all-time</div>
+                </div>
+                <div class="stat-card accent-green">
+                    <div class="stat-label">Total Revenue</div>
+                    <div class="stat-value green" id="fin-revenue">—</div>
+                    <div class="stat-delta">all-time</div>
+                </div>
+                <div class="stat-card accent-purple">
+                    <div class="stat-label">Net P&L</div>
+                    <div class="stat-value" id="fin-net">—</div>
+                    <div class="stat-delta" id="fin-net-label">—</div>
+                </div>
+            </div>
+
+            <div class="roi-progress-wrap">
+                <div class="roi-progress-label">Break-even progress</div>
+                <div class="roi-progress-bar">
+                    <div class="roi-progress-fill" id="fin-bar"></div>
+                </div>
+                <div class="roi-progress-pct" id="fin-bar-pct">0%</div>
+            </div>
+
+            <h2 class="section-title">Expense Categories</h2>
+            <div class="grid-3col" id="fin-categories"></div>
+
+            <h2 class="section-title">Cash Flow Trend</h2>
+            <div class="card">
+                <canvas class="chart-area" id="chart-cashflow"></canvas>
+                <div class="chart-placeholder-text">Monthly cash flow trend</div>
+            </div>
+
+            <h2 class="section-title">Sankey Diagram</h2>
+            <div class="card coming-soon-card">
+                <div class="coming-soon">🚧 Coming Soon</div>
+                <p class="coming-soon-sub">Revenue flow visualization</p>
+            </div>
+        </section>
+
+        <!-- Page: Agent Console -->
+        <section class="page" id="page-agent">
+            <div class="page-header">
+                <h1>Agent Console</h1>
+                <span class="page-subtitle">Dylbot system monitoring</span>
+            </div>
+
+            <div class="stats-row">
+                <div class="stat-card">
+                    <div class="stat-label">Uptime</div>
+                    <div class="stat-value blue" id="agent-uptime">—</div>
+                    <div class="stat-delta">session</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Last Heartbeat</div>
+                    <div class="stat-value green" id="agent-heartbeat">—</div>
+                    <div class="stat-delta">ago</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Actions Today</div>
+                    <div class="stat-value purple" id="agent-actions">—</div>
+                    <div class="stat-delta">tasks completed</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Trade Bot</div>
+                    <div class="stat-value" id="agent-scanner">
+                        <span class="status-dot online"></span> Active
+                    </div>
+                    <div class="stat-delta" id="agent-trades-today">— trades today</div>
+                </div>
+            </div>
+
+            <div class="grid-2col">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>📋 Activity Log</h3>
+                    </div>
+                    <div class="agent-log" id="agent-log"></div>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <h3>⏰ Cron Jobs</h3>
+                    </div>
+                    <div class="cron-list" id="cron-list">
+                        <div class="cron-item">
+                            <div class="cron-info">
+                                <span class="cron-name">Data Refresh</span>
+                                <span class="cron-schedule">Every 6 hours</span>
+                            </div>
+                            <div class="cron-toggle on"></div>
+                        </div>
+                        <div class="cron-item">
+                            <div class="cron-info">
+                                <span class="cron-name">Kalshi Scanner</span>
+                                <span class="cron-schedule">Every 30 min</span>
+                            </div>
+                            <div class="cron-toggle on"></div>
+                        </div>
+                        <div class="cron-item">
+                            <div class="cron-info">
+                                <span class="cron-name">Morning Brief</span>
+                                <span class="cron-schedule">Daily 8:30 AM</span>
+                            </div>
+                            <div class="cron-toggle on"></div>
+                        </div>
+                        <div class="cron-item">
+                            <div class="cron-info">
+                                <span class="cron-name">Nightly Backup</span>
+                                <span class="cron-schedule">Daily 12:00 AM</span>
+                            </div>
+                            <div class="cron-toggle on"></div>
+                        </div>
+                        <div class="cron-item">
+                            <div class="cron-info">
+                                <span class="cron-name">Email Check</span>
+                                <span class="cron-schedule">Every 2 hours</span>
+                            </div>
+                            <div class="cron-toggle off"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h2 class="section-title">System Health</h2>
+            <div class="grid-3col">
+                <div class="card health-card">
+                    <div class="health-indicator green"></div>
+                    <div class="health-label">API Server</div>
+                    <div class="health-detail">Vercel — Operational</div>
+                </div>
+                <div class="card health-card">
+                    <div class="health-indicator green"></div>
+                    <div class="health-label">Mac Mini</div>
+                    <div class="health-detail">Online — M4</div>
+                </div>
+                <div class="card health-card">
+                    <div class="health-indicator green"></div>
+                    <div class="health-label">OpenClaw</div>
+                    <div class="health-detail">Connected</div>
+                </div>
+            </div>
+        </section>
+    </main>
 
     <script src="app.js"></script>
 </body>
