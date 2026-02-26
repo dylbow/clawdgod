@@ -1111,3 +1111,98 @@ body {
 .stat-won { color: var(--green); }
 .stat-lost { color: var(--red); }
 .stat-open { color: var(--text-secondary); }
+
+/* ====== Projects Section ====== */
+.projects-card {
+    margin-bottom: 20px;
+}
+.projects-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+}
+.project-tile {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+.project-tile::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--purple), var(--blue));
+    opacity: 0.6;
+    border-radius: 14px 14px 0 0;
+}
+.project-tile:hover {
+    background: rgba(255, 255, 255, 0.09);
+    border-color: var(--border-hover);
+    transform: translateY(-2px);
+}
+.project-icon {
+    font-size: 2rem;
+}
+.project-name {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+.project-metrics {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 4px;
+}
+.pm {
+    font-size: 0.78rem;
+    color: var(--text-secondary);
+    background: rgba(255, 255, 255, 0.06);
+    padding: 3px 8px;
+    border-radius: 6px;
+}
+.pm-val {
+    color: var(--text-primary);
+    font-weight: 600;
+}
+.project-status {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 4px 10px;
+    border-radius: 8px;
+    width: fit-content;
+}
+.project-status.active {
+    background: rgba(52, 211, 153, 0.15);
+    color: var(--green);
+}
+.project-status.paused {
+    background: rgba(251, 191, 36, 0.15);
+    color: #fbbf24;
+}
+.project-status.upcoming {
+    background: rgba(139, 92, 246, 0.15);
+    color: var(--purple);
+}
+
+@media (max-width: 900px) {
+    .projects-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+@media (max-width: 500px) {
+    .projects-grid {
+        grid-template-columns: 1fr;
+    }
+}
