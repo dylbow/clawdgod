@@ -1,18 +1,19 @@
 /* ============================================
-   ClawdGod Dashboard v4 — Monarch Money Style
+   EmpyreLab Dashboard — Apple Liquid Glass Style
    ============================================ */
 
 :root {
-    /* Backgrounds */
-    --bg-primary: #0f1117;
-    --bg-secondary: #161922;
-    --bg-card: #1a1d28;
-    --bg-card-hover: #1e2130;
-    --bg-sidebar: #12141c;
+    /* Backgrounds - Liquid Glass */
+    --bg-primary: #0a0b0f;
+    --bg-secondary: #0f1117;
+    --bg-card: rgba(26, 29, 40, 0.55);
+    --bg-card-hover: rgba(30, 33, 48, 0.65);
+    --bg-sidebar: rgba(18, 20, 28, 0.85);
 
-    /* Borders */
+    /* Borders - Liquid Glass */
     --border: rgba(255, 255, 255, 0.06);
-    --border-hover: rgba(255, 255, 255, 0.12);
+    --border-hover: rgba(255, 255, 255, 0.14);
+    --border-glass: rgba(255, 255, 255, 0.10);
 
     /* Text */
     --text-primary: #e8eaed;
@@ -32,10 +33,11 @@
     --orange-dim: rgba(251, 191, 36, 0.12);
     --cyan: #22d3ee;
 
-    /* Layout */
+    /* Layout - Liquid Glass */
     --sidebar-width: 240px;
-    --radius: 14px;
-    --radius-sm: 8px;
+    --radius: 16px;
+    --radius-sm: 12px;
+    --radius-lg: 20px;
 
     /* Transitions */
     --transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
@@ -46,6 +48,10 @@
 body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
     background: var(--bg-primary);
+    background-image: 
+        radial-gradient(ellipse at 20% 50%, rgba(167, 139, 250, 0.06) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 20%, rgba(96, 165, 250, 0.05) 0%, transparent 50%),
+        radial-gradient(ellipse at 50% 80%, rgba(52, 211, 153, 0.04) 0%, transparent 50%);
     color: var(--text-primary);
     font-size: 0.875rem;
     line-height: 1.5;
@@ -71,11 +77,16 @@ body {
     bottom: 0;
     width: var(--sidebar-width);
     background: var(--bg-sidebar);
-    border-right: 1px solid var(--border);
+    backdrop-filter: blur(40px) saturate(1.8);
+    -webkit-backdrop-filter: blur(40px) saturate(1.8);
+    border-right: 1px solid var(--border-glass);
     display: flex;
     flex-direction: column;
     z-index: 100;
     transition: transform 0.3s ease;
+    box-shadow: 
+        2px 0 24px rgba(0, 0, 0, 0.15),
+        0 0 0 1px rgba(255, 255, 255, 0.02) inset;
 }
 
 .sidebar-brand {
@@ -275,15 +286,31 @@ body {
 
 .stat-card {
     background: var(--bg-card);
-    border: 1px solid var(--border);
+    backdrop-filter: blur(40px) saturate(1.8);
+    -webkit-backdrop-filter: blur(40px) saturate(1.8);
+    border: 1px solid var(--border-glass);
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
     border-radius: var(--radius);
     padding: 20px 24px;
     transition: var(--transition);
+    box-shadow: 
+        0 4px 30px rgba(0, 0, 0, 0.25),
+        0 0 0 1px rgba(255, 255, 255, 0.04) inset,
+        0 1px 0 rgba(255, 255, 255, 0.08) inset,
+        0 -1px 20px rgba(255, 255, 255, 0.02) inset;
 }
 
 .stat-card:hover {
     border-color: var(--border-hover);
     background: var(--bg-card-hover);
+    backdrop-filter: blur(50px) saturate(2);
+    -webkit-backdrop-filter: blur(50px) saturate(2);
+    transform: translateY(-1px);
+    box-shadow: 
+        0 8px 40px rgba(0, 0, 0, 0.3),
+        0 0 0 1px rgba(255, 255, 255, 0.06) inset,
+        0 1px 0 rgba(255, 255, 255, 0.12) inset,
+        0 -1px 30px rgba(255, 255, 255, 0.03) inset;
 }
 
 .stat-label {
@@ -328,14 +355,29 @@ body {
 
 .card {
     background: var(--bg-card);
-    border: 1px solid var(--border);
+    backdrop-filter: blur(40px) saturate(1.8);
+    -webkit-backdrop-filter: blur(40px) saturate(1.8);
+    border: 1px solid var(--border-glass);
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
     border-radius: var(--radius);
     padding: 24px;
     transition: var(--transition);
+    box-shadow: 
+        0 4px 30px rgba(0, 0, 0, 0.3),
+        0 0 0 1px rgba(255, 255, 255, 0.04) inset,
+        0 1px 0 rgba(255, 255, 255, 0.08) inset,
+        0 -1px 20px rgba(255, 255, 255, 0.02) inset;
 }
 
 .card:hover {
     border-color: var(--border-hover);
+    background: var(--bg-card-hover);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    box-shadow: 
+        0 6px 32px rgba(0, 0, 0, 0.3),
+        0 0 0 1px rgba(255, 255, 255, 0.03) inset,
+        0 1px 0 rgba(255, 255, 255, 0.08) inset;
 }
 
 .card-header {
@@ -1019,6 +1061,17 @@ body {
     .grid-2col { grid-template-columns: 1fr; }
     .grid-3col { grid-template-columns: 1fr; }
     .kanban-board { grid-template-columns: repeat(6, 160px); }
+}
+
+/* ==========================================
+   CHARTS
+   ========================================== */
+
+.chart-area {
+    height: 300px;
+    width: 100%;
+    border-radius: var(--radius-sm);
+}
 
     .channel-stats { grid-template-columns: repeat(2, 1fr); }
     .kalshi-card .kalshi-stats { grid-template-columns: repeat(2, 1fr); }

@@ -22,7 +22,7 @@
     },
     "revenue": {
         "kalshi": [
-            {"item": "Trading P&L", "amount": 0, "date": "2026-02-19", "note": "positions still open"}
+            {"item": "Trading P&L (realized)", "amount": 2, "date": "2026-02-25", "note": "net profit from settled trades"}
         ],
         "youtube": [
             {"item": "YouTube Ad Revenue", "amount": 0, "date": "2026-02-19", "note": "not monetized yet (need 1K subs)"}
