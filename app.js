@@ -221,10 +221,69 @@ async function fetchKalshi() {
         kpnl.style.color = pnl >= 0 ? 'var(--green)' : 'var(--red)';
     }
 
+    // Win/Loss stats
+    const positions = data.positions || [];
+    const won = positions.filter(p => p.result === 'yes').length;
+    const lost = positions.filter(p => p.result === 'no').length;
+    const open = positions.filter(p => !p.result).length;
+    const kStats = $('k-stats');
+    if (kStats) {
+        kStats.innerHTML = `<span class="stat-won">${won} Won</span> · <span class="stat-lost">${lost} Lost</span> · <span class="stat-open">${open} Open</span>`;
+    }
+
+    // P&L mini chart
+    const chartEl = $('k-pnl-chart');
+    if (chartEl && typeof Chart !== 'undefined') {
+        if (window._kalshiChart) window._kalshiChart.destroy();
+        // Build cumulative P&L from positions (settled first, then open at current exposure)
+        const pnlPoints = [];
+        let running = 0;
+        const settled = positions.filter(p => p.result);
+        const openPos = positions.filter(p => !p.result);
+        settled.forEach((p, i) => {
+            const delta = p.result === 'yes' ? (1 - (p.yes_price||50)/100) * Math.abs(p.position) : -(p.yes_price||50)/100 * Math.abs(p.position);
+            running += delta;
+            pnlPoints.push({ x: i + 1, y: +running.toFixed(2) });
+        });
+        openPos.forEach((p, i) => {
+            pnlPoints.push({ x: settled.length + i + 1, y: +running.toFixed(2) });
+        });
+        if (pnlPoints.length === 0) pnlPoints.push({ x: 1, y: 0 });
+        
+        const isPositive = pnlPoints[pnlPoints.length - 1].y >= 0;
+        const lineColor = isPositive ? 'rgb(52, 211, 153)' : 'rgb(248, 113, 113)';
+        const fillColor = isPositive ? 'rgba(52, 211, 153, 0.15)' : 'rgba(248, 113, 113, 0.15)';
+        
+        window._kalshiChart = new Chart(chartEl, {
+            type: 'line',
+            data: {
+                datasets: [{
+                    data: pnlPoints,
+                    borderColor: lineColor,
+                    backgroundColor: fillColor,
+                    fill: true,
+                    tension: 0.3,
+                    pointRadius: 3,
+                    pointBackgroundColor: lineColor,
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => '$' + ctx.parsed.y.toFixed(2) } } },
+                scales: {
+                    x: { type: 'linear', display: true, title: { display: true, text: 'Trade #', color: '#8b93a1', font: { size: 10 } }, grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#8b93a1', font: { size: 9 } } },
+                    y: { display: true, title: { display: true, text: 'P&L ($)', color: '#8b93a1', font: { size: 10 } }, grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#8b93a1', font: { size: 9 }, callback: v => '$' + v } }
+                }
+            }
+        });
+    }
+
     // Positions
     const posDiv = $('k-positions');
-    if (posDiv && data.positions) {
-        posDiv.innerHTML = data.positions.map(p => {
+    if (posDiv && positions) {
+        posDiv.innerHTML = positions.map(p => {
             const name = tickerToName(p.ticker);
             const priceStr = p.yes_price ? `${p.position}× YES @ ${p.yes_price}¢` : `${p.position}× YES`;
             let pnlClass = 'neutral', pnlText = 'open';

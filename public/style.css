@@ -1100,3 +1100,14 @@ body {
 .sidebar-overlay.show {
     display: block;
 }
+
+/* Win/Loss Stats */
+.k-win-loss {
+    text-align: center;
+    padding: 8px 0;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+.stat-won { color: var(--green); }
+.stat-lost { color: var(--red); }
+.stat-open { color: var(--text-secondary); }
