@@ -1,4 +1,4 @@
-// ClawdGod Dashboard v4 — Multi-page SPA
+// EmpyreLab Dashboard v5 — Multi-page SPA with Liquid Glass
 
 const API_BASE = '';
 const REFRESH_INTERVAL = 60000;
