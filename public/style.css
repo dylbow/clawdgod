@@ -4,16 +4,16 @@
 
 :root {
     /* Backgrounds - Liquid Glass */
-    --bg-primary: #0a0b0f;
-    --bg-secondary: #0f1117;
-    --bg-card: rgba(26, 29, 40, 0.55);
-    --bg-card-hover: rgba(30, 33, 48, 0.65);
-    --bg-sidebar: rgba(18, 20, 28, 0.85);
+    --bg-primary: #1a1035;
+    --bg-secondary: #1e1440;
+    --bg-card: rgba(255, 255, 255, 0.08);
+    --bg-card-hover: rgba(255, 255, 255, 0.12);
+    --bg-sidebar: rgba(255, 255, 255, 0.06);
 
     /* Borders - Liquid Glass */
-    --border: rgba(255, 255, 255, 0.06);
-    --border-hover: rgba(255, 255, 255, 0.14);
-    --border-glass: rgba(255, 255, 255, 0.10);
+    --border: rgba(255, 255, 255, 0.12);
+    --border-hover: rgba(255, 255, 255, 0.22);
+    --border-glass: rgba(255, 255, 255, 0.18);
 
     /* Text */
     --text-primary: #e8eaed;
@@ -49,9 +49,11 @@ body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
     background: var(--bg-primary);
     background-image: 
-        radial-gradient(ellipse at 20% 50%, rgba(167, 139, 250, 0.06) 0%, transparent 50%),
-        radial-gradient(ellipse at 80% 20%, rgba(96, 165, 250, 0.05) 0%, transparent 50%),
-        radial-gradient(ellipse at 50% 80%, rgba(52, 211, 153, 0.04) 0%, transparent 50%);
+        radial-gradient(ellipse at 15% 30%, rgba(139, 92, 246, 0.35) 0%, transparent 50%),
+        radial-gradient(ellipse at 85% 15%, rgba(59, 130, 246, 0.30) 0%, transparent 50%),
+        radial-gradient(ellipse at 50% 85%, rgba(99, 102, 241, 0.25) 0%, transparent 50%),
+        radial-gradient(ellipse at 70% 60%, rgba(168, 85, 247, 0.20) 0%, transparent 40%),
+        radial-gradient(ellipse at 30% 70%, rgba(79, 70, 229, 0.18) 0%, transparent 45%);
     color: var(--text-primary);
     font-size: 0.875rem;
     line-height: 1.5;
