@@ -1,8 +1,8 @@
 {
   "balance": 2.88,
-  "portfolio_value": 10.53,
-  "total_value": 13.41,
-  "total_pnl": -17.59,
+  "portfolio_value": 10.18,
+  "total_value": 13.06,
+  "total_pnl": -17.94,
   "positions": [
     {"ticker": "KXHIGHNY-26FEB27-B42.5", "position": -1, "yes_price": 68, "exposure": 0.68, "result": ""},
     {"ticker": "KXHIGHNY-26FEB27-B44.5", "position": -1, "yes_price": 78, "exposure": 0.78, "result": ""},
