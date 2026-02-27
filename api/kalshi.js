@@ -36,18 +36,17 @@ function kalshiRequest(path) {
 
 // Fallback data when no private key configured
 const FALLBACK = {
-  balance: 2.88,
-  portfolio_value: 10.18,
-  total_value: 13.06,
-  total_pnl: -17.94,
+  balance: 3.88,
+  portfolio_value: 8.86,
+  total_value: 12.74,
+  total_pnl: -18.26,
   positions: [
-    { ticker: 'KXHIGHNY-26FEB27-B42.5', position: -1, exposure: 0.68, result: '' },
-    { ticker: 'KXHIGHNY-26FEB27-B44.5', position: -1, exposure: 0.78, result: '' },
-    { ticker: 'KXHIGHAUS-26FEB26-T84', position: -1, exposure: 0.95, result: '' },
-    { ticker: 'KXHIGHDEN-26FEB26-B57.5', position: -1, exposure: 0.93, result: '' },
     { ticker: 'KXHIGHCHI-26FEB26-B42.5', position: 1, exposure: 0.43, result: '' },
     { ticker: 'KXHIGHCHI-26FEB26-T47', position: -1, exposure: 0.95, result: '' },
+    { ticker: 'KXHIGHAUS-26FEB26-T84', position: -1, exposure: 0.95, result: '' },
     { ticker: 'KXHIGHNY-26FEB26-T43', position: -1, exposure: 0.90, result: '' },
+    { ticker: 'KXHIGHNY-26FEB27-B42.5', position: -1, exposure: 0.68, result: '' },
+    { ticker: 'KXHIGHNY-26FEB27-B44.5', position: -1, exposure: 0.78, result: '' },
     { ticker: 'KXBTCD-26FEB2717-T62999.99', position: 1, exposure: 0.96, result: '' },
     { ticker: 'KXBTCD-26FEB2717-T64999.99', position: 1, exposure: 0.89, result: '' },
     { ticker: 'KXBTCD-26FEB2717-T66499.99', position: 1, exposure: 0.76, result: '' },
