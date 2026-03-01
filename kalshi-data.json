@@ -1,9 +1,11 @@
 {
-  "balance": 8.90,
-  "portfolio_value": 5.37,
-  "total_value": 14.27,
-  "total_pnl": -16.73,
+  "balance": 7.81,
+  "portfolio_value": 3.08,
+  "total_value": 10.89,
+  "total_pnl": -20.11,
   "positions": [
+    {"ticker": "KXHIGHCHI-26MAR01-T36", "position": -1, "exposure": 0.93, "result": ""},
+    {"ticker": "KXHIGHNY-26MAR01-T38", "position": 1, "exposure": 0.14, "result": ""},
     {"ticker": "KXHIGHNY-26FEB28-T50", "position": 1, "exposure": 0.52, "result": ""},
     {"ticker": "KXWARSHNOM-26MAR01-T0", "position": 31, "exposure": 1.68, "result": ""},
     {"ticker": "KXBTCMINMON-BTC-26FEB28-6000000", "position": 1, "exposure": 0.47, "result": ""},
