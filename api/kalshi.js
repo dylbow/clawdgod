@@ -37,18 +37,14 @@ function kalshiRequest(path) {
 // Fallback data when no private key configured
 const FALLBACK = {
   balance: 7.81,
-  portfolio_value: 2.96,
-  total_value: 10.77,
+  portfolio_value: 1.77,
+  total_value: 9.58,
   total_pnl: -20.25,
   positions: [
     { ticker: 'KXHIGHCHI-26MAR01-T36', position: -1, exposure: 0.93, result: '' },
     { ticker: 'KXHIGHNY-26MAR01-T38', position: 1, exposure: 0.14, result: '' },
-    { ticker: 'KXHIGHNY-26FEB28-T50', position: 1, exposure: 0.52, result: '' },
-    { ticker: 'KXWARSHNOM-26MAR01-T0', position: 31, exposure: 1.68, result: '' },
-    { ticker: 'KXBTCMINMON-BTC-26FEB28-6000000', position: 1, exposure: 0.47, result: '' },
     { ticker: 'KXOAIANTH-40-OAI', position: 2, exposure: 0.82, result: '' },
     { ticker: 'KXCABOUT-29JAN-PBON', position: 4, exposure: 0.88, result: '' },
-    { ticker: 'KXCABLEAVE-26FEB-26FEB', position: 5, exposure: 1.00, result: '' },
   ]
 };
 
