@@ -1,8 +1,8 @@
 {
   "balance": 7.81,
-  "portfolio_value": 3.08,
-  "total_value": 10.89,
-  "total_pnl": -20.11,
+  "portfolio_value": 2.94,
+  "total_value": 10.75,
+  "total_pnl": -20.25,
   "positions": [
     {"ticker": "KXHIGHCHI-26MAR01-T36", "position": -1, "exposure": 0.93, "result": ""},
     {"ticker": "KXHIGHNY-26MAR01-T38", "position": 1, "exposure": 0.14, "result": ""},
