@@ -1,7 +1,7 @@
 {
   "balance": 8.81,
-  "portfolio_value": 1.72,
-  "total_value": 10.53,
+  "portfolio_value": 1.70,
+  "total_value": 10.51,
   "total_pnl": -20.25,
   "positions": [
     {"ticker": "KXOAIANTH-40-OAI", "position": 2, "exposure": 0.82, "result": ""},
