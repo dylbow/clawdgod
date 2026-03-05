@@ -1,10 +1,9 @@
 {
   "balance": 8.16,
-  "portfolio_value": 1.89,
-  "total_value": 10.05,
+  "portfolio_value": 1.70,
+  "total_value": 9.86,
   "total_pnl": -20.57,
   "positions": [
-    {"ticker": "KXHIGHDEN-26MAR04-T63", "position": -1, "exposure": 0.63, "result": ""},
     {"ticker": "KXOAIANTH-40-OAI", "position": 2, "exposure": 0.82, "result": ""},
     {"ticker": "KXCABOUT-29JAN-PBON", "position": 4, "exposure": 0.88, "result": ""}
   ]
