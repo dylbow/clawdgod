@@ -1,10 +1,12 @@
 {
-  "balance": 8.16,
-  "portfolio_value": 1.70,
-  "total_value": 9.86,
+  "balance": 7.46,
+  "portfolio_value": 2.89,
+  "total_value": 10.35,
   "total_pnl": -20.57,
   "positions": [
     {"ticker": "KXOAIANTH-40-OAI", "position": 2, "exposure": 0.82, "result": ""},
-    {"ticker": "KXCABOUT-29JAN-PBON", "position": 4, "exposure": 0.88, "result": ""}
+    {"ticker": "KXCABOUT-29JAN-PBON", "position": 4, "exposure": 0.88, "result": ""},
+    {"ticker": "KXHIGHCHI-26MAR05-B49.5", "position": -1, "exposure": 0.35, "result": ""},
+    {"ticker": "KXHIGHDEN-26MAR06-T40", "position": 1, "exposure": 0.31, "result": ""}
   ]
 }
