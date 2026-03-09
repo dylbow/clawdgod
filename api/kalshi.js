@@ -37,9 +37,9 @@ function kalshiRequest(path) {
 // Fallback data when no private key configured
 const FALLBACK = {
   balance: 9.16,
-  portfolio_value: 1.18,
-  total_value: 10.34,
-  total_pnl: -20.57,
+  portfolio_value: 1.14,
+  total_value: 10.30,
+  total_pnl: -20.61,
   positions: [
     { ticker: 'KXOAIANTH-40-OAI', position: 2, exposure: 0.82, result: '' },
     { ticker: 'KXCABOUT-29JAN-PBON', position: 4, exposure: 0.88, result: '' },
