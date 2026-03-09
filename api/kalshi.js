@@ -39,13 +39,9 @@ const FALLBACK = {
   balance: 9.16,
   portfolio_value: 1.04,
   total_value: 10.20,
-  total_pnl: -20.61,
+  total_pnl: -20.71,
   positions: [
-    { ticker: 'KXOAIANTH-40-OAI', position: 2, exposure: 0.82, result: '' },
-    { ticker: 'KXCABOUT-29JAN-PBON', position: 4, exposure: 0.88, result: '' },
-    { ticker: 'KXHIGHDEN-26MAR06-T40', position: 1, exposure: 0.31, result: '' },
-    { ticker: 'KXHIGHCHI-26MAR07-B66.5', position: -1, exposure: 0.68, result: '' },
-    { ticker: 'KXHIGHNY-26MAR07-T50', position: -1, exposure: 0.58, result: '' },
+    { ticker: 'KXOAIANTH-40-OAI', position: 2, exposure: 0.82, result: '' }
   ]
 };
 
