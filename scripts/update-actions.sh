@@ -49,7 +49,9 @@ for session_file in "$SESSION_DIR"/*.jsonl*; do
     file_date=$(stat -f %Sm -t %Y-%m-%d "$session_file" 2>/dev/null || echo "")
     if [ "$file_date" = "$TODAY" ]; then
       # Count Kalshi trade mentions
-      trades=$(grep -ic 'kalshi.*trade\|placed.*order\|bought.*contract' "$session_file" 2>/dev/null || echo 0)
+      trades=$(grep -ic 'kalshi.*trade\|placed.*order\|bought.*contract' "$session_file" 2>/dev/null || echo "0")
+      trades=$(echo "$trades" | tr -d '\n' | head -1)
+      [ -z "$trades" ] && trades=0
       kalshi_trades=$((kalshi_trades + trades))
     fi
   fi
