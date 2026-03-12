@@ -759,6 +759,120 @@ function initQuickActions() {
     });
 }
 
+// Health Check + Compact
+function initHealthActions() {
+    const healthBtn = $('health-check');
+    const compactBtn = $('compact-agent');
+    const panel = $('health-panel');
+    
+    if (healthBtn) {
+        healthBtn.addEventListener('click', async () => {
+            healthBtn.classList.add('loading');
+            
+            // Try local gateway first (works when running locally)
+            let data = null;
+            try {
+                const res = await fetch('http://127.0.0.1:18789/api/status', { signal: AbortSignal.timeout(3000) });
+                if (res.ok) data = await res.json();
+            } catch(e) {}
+            
+            // Try Vercel API as fallback
+            if (!data) {
+                try {
+                    const res = await fetch('/api/health', { signal: AbortSignal.timeout(5000) });
+                    if (res.ok) data = await res.json();
+                } catch(e) {}
+            }
+            
+            healthBtn.classList.remove('loading');
+            
+            if (panel) {
+                panel.style.display = 'block';
+                
+                if (data && !data.error) {
+                    const session = data.session || data;
+                    const ctx = session.context || {};
+                    const used = ctx.used || 0;
+                    const max = ctx.max || 200000;
+                    const pct = Math.round((used / max) * 100);
+                    
+                    const bar = $('health-context-bar');
+                    if (bar) {
+                        bar.style.width = pct + '%';
+                        bar.className = 'health-bar' + (pct > 80 ? ' danger' : pct > 50 ? ' warning' : '');
+                    }
+                    
+                    const ctxEl = $('health-context');
+                    if (ctxEl) ctxEl.textContent = Math.round(used/1000) + 'k / ' + Math.round(max/1000) + 'k (' + pct + '%)';
+                    
+                    const tokEl = $('health-tokens');
+                    if (tokEl) tokEl.textContent = (session.tokensIn || 0) + ' in / ' + (session.tokensOut || 0) + ' out';
+                    
+                    const modEl = $('health-model');
+                    if (modEl) modEl.textContent = session.model || 'unknown';
+                    
+                    const ageEl = $('health-age');
+                    if (ageEl) ageEl.textContent = session.uptime || session.age || 'unknown';
+                    
+                    const compEl = $('health-compactions');
+                    if (compEl) compEl.textContent = session.compactions || '0';
+                    
+                    const statusEl = $('health-status');
+                    if (statusEl) {
+                        if (pct > 80) {
+                            statusEl.textContent = '⚠️ HIGH — Compact recommended';
+                            statusEl.style.color = '#f87171';
+                        } else if (pct > 50) {
+                            statusEl.textContent = '⚡ MODERATE — Running well';
+                            statusEl.style.color = '#fbbf24';
+                        } else {
+                            statusEl.textContent = '✅ HEALTHY — Plenty of context';
+                            statusEl.style.color = '#4ade80';
+                        }
+                    }
+                    
+                    const tsEl = $('health-timestamp');
+                    if (tsEl) tsEl.textContent = 'Checked: ' + new Date().toLocaleTimeString();
+                } else {
+                    // Can't reach gateway — show message
+                    const statusEl = $('health-status');
+                    if (statusEl) {
+                        statusEl.textContent = '🔌 Gateway unreachable (runs locally)';
+                        statusEl.style.color = '#fbbf24';
+                    }
+                    const tsEl = $('health-timestamp');
+                    if (tsEl) tsEl.textContent = 'Gateway runs on local machine only';
+                }
+            }
+        });
+    }
+    
+    if (compactBtn) {
+        compactBtn.addEventListener('click', () => {
+            compactBtn.classList.add('loading');
+            compactBtn.querySelector('.action-label').textContent = 'Compacting...';
+            // Try to trigger compact via gateway
+            fetch('http://127.0.0.1:18789/api/compact', { method: 'POST', signal: AbortSignal.timeout(5000) })
+                .then(() => {
+                    compactBtn.classList.remove('loading');
+                    compactBtn.classList.add('success');
+                    compactBtn.querySelector('.action-label').textContent = '✓ Compacted';
+                    setTimeout(() => {
+                        compactBtn.classList.remove('success');
+                        compactBtn.querySelector('.action-label').textContent = 'Compact / Refresh';
+                    }, 3000);
+                })
+                .catch(() => {
+                    compactBtn.classList.remove('loading');
+                    compactBtn.querySelector('.action-label').textContent = 'Send /compact in chat';
+                    setTimeout(() => {
+                        compactBtn.querySelector('.action-label').textContent = 'Compact / Refresh';
+                    }, 3000);
+                });
+        });
+    }
+}
+
 // ========== SPARKLINE ENGINE ==========
 
 function drawSparkline(canvasId, data, options = {}) {
@@ -972,6 +1086,7 @@ async function init() {
     renderFeed('all');
     initFeedFilters();
     initQuickActions();
+    initHealthActions();
 
     // Fetch all data in parallel
     await Promise.allSettled([

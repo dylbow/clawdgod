@@ -1320,3 +1320,14 @@ body {
 }
 /* Force rebuild Thu Mar 12 15:35:05 MST 2026 */
 /* root dir fix Thu Mar 12 15:50:15 MST 2026 */
+
+/* Health Panel */
+.health-panel { padding: 20px; }
+.health-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.health-stat { display: flex; flex-direction: column; gap: 4px; }
+.health-label { font-size: 0.75rem; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 0.05em; }
+.health-value { font-size: 1rem; font-weight: 600; color: rgba(255,255,255,0.9); }
+.health-bar-container { height: 8px; background: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden; }
+.health-bar { height: 100%; border-radius: 4px; transition: width 0.5s ease, background 0.3s; background: #4ade80; }
+.health-bar.warning { background: #fbbf24; }
+.health-bar.danger { background: #f87171; }
