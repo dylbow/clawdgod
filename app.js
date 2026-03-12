@@ -678,6 +678,7 @@ async function fetchROI() {
 }
 
 async function fetchActions() {
+    console.log("fetchActions called");
     const data = await smartFetch('/api/actions', 'actions-data.json');
     if (!data) return;
     
