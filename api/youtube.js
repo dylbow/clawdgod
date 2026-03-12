@@ -2,10 +2,10 @@ const https = require('https');
 
 const YOUTUBE_API_KEY = process.env.YOUTUBE_API_KEY;
 
-// Active channel IDs (Theoretika, OpenDyl)
+// Active channel IDs (Theoretika, OpenDyl/dylbot)
 const CHANNELS = {
-  theoretika: 'UCIgJz8G7qd4JM_eWwPNHOjw',
-  opendyl: 'UC_HFJz4tqXvL4Y2e8NQzCZw'
+  theoretika: 'UC_uHTi5uHWjR3gPslwWAlJw',
+  opendyl: 'UCHAaQuRctKj6PXSl2d9pL2Q'
 };
 
 function youtubeRequest(endpoint) {
