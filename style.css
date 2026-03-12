@@ -339,6 +339,7 @@ body {
 .stat-value.red { color: var(--red); }
 .stat-value.blue { color: var(--blue); }
 .stat-value.purple { color: var(--purple); }
+.stat-value.orange { color: var(--orange); }
 
 .stat-delta {
     font-size: 0.75rem;
@@ -528,6 +529,65 @@ body {
 }
 
 /* ==========================================
+   QUICK ACTIONS PANEL
+   ========================================== */
+
+.quick-actions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 12px;
+}
+
+.action-btn {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 20px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--text-primary);
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all var(--transition);
+    backdrop-filter: blur(10px);
+}
+
+.action-btn:hover {
+    background: var(--bg-card-hover);
+    border-color: var(--border-hover);
+    transform: translateY(-2px);
+}
+
+.action-btn.loading {
+    opacity: 0.6;
+    cursor: wait;
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+.action-btn.success {
+    background: var(--green-dim);
+    border-color: var(--green);
+    color: var(--green);
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 0.6; }
+    50% { opacity: 0.8; }
+}
+
+.action-icon {
+    font-size: 1.25rem;
+    flex-shrink: 0;
+}
+
+.action-label {
+    flex: 1;
+    text-align: left;
+}
+
+/* ==========================================
    CHANNEL CARDS
    ========================================== */
 
@@ -553,6 +613,7 @@ body {
 }
 
 .channel-avatar.theoretika { background: linear-gradient(135deg, #6366f1, #a78bfa); color: white; }
+.channel-avatar.opendyl { background: linear-gradient(135deg, #22d3ee, #60a5fa); color: white; font-size: 32px; }
 .channel-avatar.lofi { background: linear-gradient(135deg, #ec4899, #f97316); color: white; }
 .channel-avatar.seedance { background: linear-gradient(135deg, #22c55e, #06b6d4); color: white; }
 .channel-avatar.empyre { background: linear-gradient(135deg, #a78bfa, #6366f1); color: white; }
@@ -717,6 +778,13 @@ body {
     font-size: 0.6875rem;
     color: var(--text-muted);
     margin-top: 4px;
+}
+
+.kanban-card-channel {
+    font-size: 0.625rem;
+    color: var(--blue);
+    margin-top: 6px;
+    opacity: 0.8;
 }
 
 .kanban-empty {

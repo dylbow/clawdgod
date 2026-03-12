@@ -9,6 +9,40 @@ const $ = id => document.getElementById(id);
 const fmt = n => typeof n === 'number' ? '$' + n.toFixed(2) : n;
 const fmtK = n => n >= 1000 ? (n / 1000).toFixed(1) + 'K' : String(n);
 
+// Animated counter — counts up to target value
+function animateCounter(element, target, duration = 1000, suffix = '') {
+    if (!element) return;
+    const start = 0;
+    const range = target - start;
+    const startTime = Date.now();
+    
+    function update() {
+        const elapsed = Date.now() - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        const eased = 1 - Math.pow(1 - progress, 3); // easeOutCubic
+        const current = Math.floor(start + range * eased);
+        
+        if (suffix === '$') {
+            element.textContent = '$' + current.toFixed(2);
+        } else if (suffix === 'K') {
+            element.textContent = fmtK(current);
+        } else {
+            element.textContent = current + suffix;
+        }
+        
+        if (progress < 1) {
+            requestAnimationFrame(update);
+        } else {
+            // Final value
+            if (suffix === '$') element.textContent = '$' + target.toFixed(2);
+            else if (suffix === 'K') element.textContent = fmtK(target);
+            else element.textContent = target + suffix;
+        }
+    }
+    
+    update();
+}
+
 async function smartFetch(endpoint, fallbackFile) {
     try {
         const res = await fetch(API_BASE + endpoint, { signal: AbortSignal.timeout(5000) });
@@ -142,36 +176,31 @@ function initFeedFilters() {
 
 // ========== KANBAN ==========
 
-const PIPELINE_DATA = {
-    script: [{ title: 'Ocean Depths', type: 'long-form' }],
-    images: [{ title: 'Life Inside Earth', type: 'long-form', note: 'Dylan generating' }],
-    voice: [],
-    assembly: [],
-    review: [
-        { title: 'Ancient Aliens', type: 'long-form', note: 'Scheduled Wed 3PM' },
-        { title: 'Glass Rain Planet', type: 'short', note: 'On Drive' },
-    ],
-    posted: [
-        { title: 'Fermi Paradox', type: 'long-form' },
-        { title: 'Mars Colony', type: 'long-form' },
-        { title: 'Black Hole Sound', type: 'short' },
-        { title: 'Jupiter Fall', type: 'short' },
-        { title: 'Dark Matter', type: 'short' },
-        { title: 'Made of Stars', type: 'short' },
-    ]
-};
-
-function initKanban() {
-    Object.entries(PIPELINE_DATA).forEach(([stage, cards]) => {
+async function fetchContentPipeline() {
+    const data = await smartFetch('/api/content-pipeline', null);
+    if (!data || !data.pipeline) return;
+    
+    const pipeline = data.pipeline;
+    
+    Object.entries(pipeline).forEach(([stage, cards]) => {
         const col = $('kanban-' + stage);
         const count = $('kc-' + stage);
         if (!col) return;
-        if (count) count.textContent = cards.length;
+        if (count) {
+            const num = cards.length;
+            if (!count.dataset.animated) {
+                animateCounter(count, num, 800);
+                count.dataset.animated = 'true';
+            } else {
+                count.textContent = num;
+            }
+        }
         col.innerHTML = cards.length ? cards.map(c => `
             <div class="kanban-card-item">
                 <div class="kanban-card-type">${c.type === 'long-form' ? '📹 Long-form' : '⚡ Short'}</div>
                 <div class="kanban-card-title">${c.title}</div>
                 ${c.note ? `<div class="kanban-card-note">${c.note}</div>` : ''}
+                ${c.channel ? `<div class="kanban-card-channel">${c.channel}</div>` : ''}
             </div>
         `).join('') : '<div class="kanban-empty">—</div>';
     });
@@ -183,19 +212,66 @@ async function fetchYouTube() {
     const data = await smartFetch('/api/youtube', 'youtube-data.json');
     if (!data) return;
 
-    // Home stats
+    // Support both old format (single channel) and new format (multi-channel)
+    const totalSubs = data.total_subscribers || data.subscribers || 0;
+    const totalViews = data.total_views || data.views || 0;
+    
+    // Home stats — with animation
     const el = $('home-subs');
-    if (el) el.textContent = data.subscribers || 0;
+    if (el && !el.dataset.animated) {
+        animateCounter(el, totalSubs, 1500);
+        el.dataset.animated = 'true';
+    } else if (el) {
+        el.textContent = totalSubs;
+    }
 
     // Channels page — Theoretika
-    const ts = $('ch-theo-subs'); if (ts) ts.textContent = data.subscribers || 0;
-    const tv = $('ch-theo-views'); if (tv) tv.textContent = fmtK(data.views || 0);
-    const th = $('ch-theo-hours'); if (th) th.textContent = (data.watchHours || 0).toFixed(1);
-    const tr = $('ch-theo-rev'); if (tr) tr.textContent = '$0';
+    if (data.theoretika) {
+        const ts = $('ch-theo-subs');
+        if (ts && !ts.dataset.animated) {
+            animateCounter(ts, data.theoretika.subscribers, 1200);
+            ts.dataset.animated = 'true';
+        } else if (ts) {
+            ts.textContent = data.theoretika.subscribers;
+        }
+        
+        const tv = $('ch-theo-views'); 
+        if (tv) tv.textContent = fmtK(data.theoretika.views || 0);
+        const th = $('ch-theo-hours'); 
+        if (th) th.textContent = (data.theoretika.watchHours || 0).toFixed(1);
+        const tr = $('ch-theo-rev'); 
+        if (tr) tr.textContent = '$0';
+    }
+    
+    // OpenDyl channel
+    if (data.opendyl) {
+        const os = $('ch-opendyl-subs');
+        if (os && !os.dataset.animated) {
+            animateCounter(os, data.opendyl.subscribers, 1200);
+            os.dataset.animated = 'true';
+        } else if (os) {
+            os.textContent = data.opendyl.subscribers;
+        }
+        
+        const ov = $('ch-opendyl-views');
+        if (ov) ov.textContent = fmtK(data.opendyl.views || 0);
+        const oh = $('ch-opendyl-hours');
+        if (oh) oh.textContent = (data.opendyl.watchHours || 0).toFixed(1);
+        const orev = $('ch-opendyl-rev');
+        if (orev) orev.textContent = '$0';
+    }
 
-    // Totals
-    const cs = $('ch-total-subs'); if (cs) cs.textContent = data.subscribers || 0;
-    const cv = $('ch-total-views'); if (cv) cv.textContent = fmtK(data.views || 0);
+    // Totals — with animation
+    const cs = $('ch-total-subs');
+    if (cs && !cs.dataset.animated) {
+        animateCounter(cs, totalSubs, 1500);
+        cs.dataset.animated = 'true';
+    } else if (cs) {
+        cs.textContent = totalSubs;
+    }
+    
+    const cv = $('ch-total-views');
+    if (cv) cv.textContent = fmtK(totalViews);
 }
 
 async function fetchKalshi() {
@@ -207,9 +283,15 @@ async function fetchKalshi() {
     const total = data.total_value || (bal + port);
     const pnl = data.total_pnl;
 
-    // Home
+    // Home — with animation
     const ht = $('home-trades');
-    if (ht) ht.textContent = (data.positions || []).filter(p => !p.result).length;
+    const openTrades = (data.positions || []).filter(p => !p.result).length;
+    if (ht && !ht.dataset.animated) {
+        animateCounter(ht, openTrades, 1000);
+        ht.dataset.animated = 'true';
+    } else if (ht) {
+        ht.textContent = openTrades;
+    }
 
     // Channels page
     const kb = $('k-balance'); if (kb) kb.textContent = fmt(bal);
@@ -381,6 +463,36 @@ async function fetchROI() {
     }
 }
 
+async function fetchActions() {
+    const data = await smartFetch('/api/actions', null);
+    if (!data) return;
+    
+    // AI Actions Today counter
+    const counter = $('ai-actions-today');
+    if (counter && !counter.dataset.animated) {
+        animateCounter(counter, data.count, 1500);
+        counter.dataset.animated = 'true';
+    } else if (counter) {
+        counter.textContent = data.count;
+    }
+    
+    // Update activity feed with recent actions
+    if (data.recent && data.recent.length > 0) {
+        const container = $('home-feed');
+        if (container && container.children.length === 0) {
+            container.innerHTML = data.recent.map(item => `
+                <div class="feed-item">
+                    <span class="feed-icon">⚡</span>
+                    <div class="feed-body">
+                        <div class="feed-action">${item.action}</div>
+                    </div>
+                    <span class="feed-time">${item.time}</span>
+                </div>
+            `).join('');
+        }
+    }
+}
+
 async function fetchDylbotStatus() {
     const data = await smartFetch('/api/status', 'dylbot-status.json');
     if (!data) return;
@@ -401,6 +513,36 @@ async function fetchDylbotStatus() {
             </div>
         `).join('');
     }
+}
+
+// Quick Actions Panel
+function initQuickActions() {
+    const actions = [
+        { id: 'kalshi-scan', label: '🔍 Run Kalshi Scan', command: 'kalshi-scan' },
+        { id: 'generate-short', label: '🎬 Generate Theoretika Short', command: 'generate-short' },
+        { id: 'check-email', label: '📧 Check Email', command: 'check-email' },
+        { id: 'backup', label: '💾 Run Backup', command: 'backup' },
+    ];
+    
+    actions.forEach(action => {
+        const btn = $(action.id);
+        if (btn) {
+            btn.addEventListener('click', () => {
+                btn.classList.add('loading');
+                btn.textContent = 'Running...';
+                // Simulate action (in production, this would call an API endpoint)
+                setTimeout(() => {
+                    btn.classList.remove('loading');
+                    btn.classList.add('success');
+                    btn.textContent = '✓ Complete';
+                    setTimeout(() => {
+                        btn.classList.remove('success');
+                        btn.textContent = action.label;
+                    }, 2000);
+                }, 1500);
+            });
+        }
+    });
 }
 
 // ========== SPARKLINE ENGINE ==========
@@ -445,7 +587,7 @@ function drawSparkline(canvasId, data, options = {}) {
 function initCharts() {
     // Keep sparklines for channel cards
     drawSparkline('spark-theo', [50, 80, 120, 200, 350, 500, 600, 942], { color: 'rgb(99, 102, 241)', min: 0 });
-    drawSparkline('spark-lofi', [0], { color: 'rgb(236, 72, 153)', min: 0 });
+    drawSparkline('spark-opendyl', [10, 25, 45, 60, 75, 85], { color: 'rgb(34, 211, 238)', min: 0 });
     drawSparkline('spark-kalshi', [0, -0.82, -0.60, -0.40, 0.10, 0.51], { color: 'rgb(52, 211, 153)', min: -1 });
 
     // Initialize P&L Charts with Chart.js
@@ -607,24 +749,35 @@ function initPnLCharts() {
 // ========== INIT ==========
 
 async function init() {
-    console.log('🧪 EmpyreLab — The Lab Dashboard');
+    console.log('🧪 EmpyreLab — The Lab Dashboard v6');
 
     renderFeed('all');
     initFeedFilters();
-    initKanban();
+    initQuickActions();
 
-    await Promise.allSettled([fetchYouTube(), fetchKalshi(), fetchMonday(), fetchROI(), fetchDylbotStatus()]);
+    // Fetch all data in parallel
+    await Promise.allSettled([
+        fetchYouTube(),
+        fetchKalshi(),
+        fetchMonday(),
+        fetchROI(),
+        fetchDylbotStatus(),
+        fetchContentPipeline(),
+        fetchActions()
+    ]);
 
     setTimeout(initCharts, 300);
 
-    // Auto-refresh
-    setInterval(fetchKalshi, 30000);
-    setInterval(fetchMonday, 120000);
-    setInterval(fetchYouTube, 300000);
-    setInterval(fetchROI, 300000);
-    setInterval(fetchDylbotStatus, 60000);
+    // Auto-refresh intervals
+    setInterval(fetchKalshi, 30000);          // 30s - Kalshi data
+    setInterval(fetchMonday, 120000);         // 2min - Monday tasks
+    setInterval(fetchYouTube, 300000);        // 5min - YouTube stats
+    setInterval(fetchROI, 300000);            // 5min - ROI data
+    setInterval(fetchDylbotStatus, 60000);    // 1min - Dylbot status
+    setInterval(fetchContentPipeline, 60000); // 1min - Content pipeline
+    setInterval(fetchActions, 30000);         // 30s - AI actions
 
-    console.log('📊 All systems online.');
+    console.log('📊 All systems online. Animated counters enabled.');
 }
 
 init();

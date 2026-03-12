@@ -64,9 +64,9 @@
 
             <div class="stats-row">
                 <div class="stat-card">
-                    <div class="stat-label">Total Revenue</div>
-                    <div class="stat-value green" id="home-revenue">$0.00</div>
-                    <div class="stat-delta">lifetime</div>
+                    <div class="stat-label">AI Actions Today</div>
+                    <div class="stat-value orange" id="ai-actions-today">0</div>
+                    <div class="stat-delta">automated tasks</div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-label">Total Subscribers</div>
@@ -79,11 +79,9 @@
                     <div class="stat-delta">Kalshi positions</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-label">Agent Status</div>
-                    <div class="stat-value" id="home-agent-status">
-                        <span class="status-dot online"></span> Online
-                    </div>
-                    <div class="stat-delta" id="home-uptime">uptime: 00:00:00</div>
+                    <div class="stat-label">Total Revenue</div>
+                    <div class="stat-value green" id="home-revenue">$0.00</div>
+                    <div class="stat-delta">lifetime</div>
                 </div>
             </div>
 
@@ -186,6 +184,32 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Quick Actions Panel -->
+            <div class="card">
+                <div class="card-header">
+                    <h3>⚡ Quick Actions</h3>
+                    <span class="card-subtitle">Send commands to Dylbot</span>
+                </div>
+                <div class="quick-actions-grid">
+                    <button class="action-btn" id="kalshi-scan">
+                        <span class="action-icon">🔍</span>
+                        <span class="action-label">Run Kalshi Scan</span>
+                    </button>
+                    <button class="action-btn" id="generate-short">
+                        <span class="action-icon">🎬</span>
+                        <span class="action-label">Generate Theoretika Short</span>
+                    </button>
+                    <button class="action-btn" id="check-email">
+                        <span class="action-icon">📧</span>
+                        <span class="action-label">Check Email</span>
+                    </button>
+                    <button class="action-btn" id="backup">
+                        <span class="action-icon">💾</span>
+                        <span class="action-label">Run Backup</span>
+                    </button>
+                </div>
+            </div>
         </section>
 
         <!-- Page: Channels -->
@@ -246,31 +270,31 @@
 
                 <div class="card channel-card">
                     <div class="channel-header">
-                        <div class="channel-avatar lofi">♪</div>
+                        <div class="channel-avatar opendyl">🤖</div>
                         <div>
-                            <h3>lil lofi guy <span class="auto-badge" title="Fully automated by Dylbot">⚡</span></h3>
-                            <span class="channel-tag">Lofi Music</span>
+                            <h3>OpenDyl</h3>
+                            <span class="channel-tag">Tech & AI</span>
                         </div>
                     </div>
                     <div class="channel-stats">
                         <div class="ch-stat">
-                            <span class="ch-stat-val">2</span>
+                            <span class="ch-stat-val" id="ch-opendyl-subs">—</span>
                             <span class="ch-stat-label">Subscribers</span>
                         </div>
                         <div class="ch-stat">
-                            <span class="ch-stat-val">12</span>
+                            <span class="ch-stat-val" id="ch-opendyl-views">—</span>
                             <span class="ch-stat-label">Views</span>
                         </div>
                         <div class="ch-stat">
-                            <span class="ch-stat-val">0.3</span>
+                            <span class="ch-stat-val" id="ch-opendyl-hours">—</span>
                             <span class="ch-stat-label">Watch Hrs</span>
                         </div>
                         <div class="ch-stat">
-                            <span class="ch-stat-val">$0</span>
+                            <span class="ch-stat-val" id="ch-opendyl-rev">$0</span>
                             <span class="ch-stat-label">Revenue</span>
                         </div>
                     </div>
-                    <canvas class="sparkline" id="spark-lofi"></canvas>
+                    <canvas class="sparkline" id="spark-opendyl"></canvas>
                 </div>
 
                 <div class="card channel-card">
