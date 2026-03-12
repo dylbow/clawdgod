@@ -63,10 +63,10 @@
             </div>
 
             <div class="stats-row">
-                <div class="stat-card">
+                <div class="stat-card clickable" id="ai-actions-card">
                     <div class="stat-label">AI Actions Today</div>
                     <div class="stat-value orange" id="ai-actions-today">0</div>
-                    <div class="stat-delta">automated tasks</div>
+                    <div class="stat-delta">automated tasks · click for details</div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-label">Total Subscribers</div>
@@ -82,6 +82,23 @@
                     <div class="stat-label">Total Revenue</div>
                     <div class="stat-value green" id="home-revenue">$0.00</div>
                     <div class="stat-delta">lifetime</div>
+                </div>
+            </div>
+
+            <!-- AI Actions Detail Panel (hidden by default) -->
+            <div class="card actions-detail-panel" id="actions-detail-panel" style="display:none; margin-bottom: 24px;">
+                <div class="card-header">
+                    <h3>🤖 AI Actions Breakdown</h3>
+                    <button class="panel-close-btn" id="close-actions-panel">✕</button>
+                </div>
+                <div class="actions-breakdown" id="actions-breakdown">
+                    <!-- Breakdown categories will be populated by JS -->
+                </div>
+                <div class="card-header" style="margin-top: 16px;">
+                    <h3>📋 Recent Actions</h3>
+                </div>
+                <div class="recent-actions-list" id="recent-actions-list">
+                    <!-- Recent actions will be populated by JS -->
                 </div>
             </div>
 

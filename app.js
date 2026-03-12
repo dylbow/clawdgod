@@ -681,6 +681,9 @@ async function fetchActions() {
     const data = await smartFetch('/api/actions', null);
     if (!data) return;
     
+    // Store data globally for detail panel
+    window.actionsData = data;
+    
     // AI Actions Today counter
     const counter = $('ai-actions-today');
     if (counter && !counter.dataset.animated) {
@@ -715,6 +718,51 @@ async function fetchActions() {
                     <span class="feed-time">${item.count}×</span>
                 </div>
             `).join('');
+        }
+    }
+    
+    // Populate detail panel breakdown
+    if (data.breakdown && data.breakdown.length > 0) {
+        const breakdownContainer = $('actions-breakdown');
+        if (breakdownContainer) {
+            const iconMap = {
+                'memory_logs': '📝',
+                'sessions': '🔄',
+                'git_commits': '💾',
+                'kalshi_trades': '📈',
+                'cron_jobs': '⏰',
+                'content_generation': '🎨',
+                'messages': '📧'
+            };
+            
+            breakdownContainer.innerHTML = data.breakdown.map(item => `
+                <div class="breakdown-item">
+                    <div class="breakdown-icon">${iconMap[item.type] || '⚡'}</div>
+                    <div class="breakdown-info">
+                        <div class="breakdown-type">${item.description}</div>
+                        <div class="breakdown-count">${item.count}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+    }
+    
+    // Populate recent actions list
+    if (data.recent_actions && data.recent_actions.length > 0) {
+        const recentContainer = $('recent-actions-list');
+        if (recentContainer) {
+            recentContainer.innerHTML = data.recent_actions.map(action => `
+                <div class="recent-action-item">
+                    <div class="recent-action-icon">${action.icon || '⚡'}</div>
+                    <div class="recent-action-text">${action.description}</div>
+                    <div class="recent-action-time">${action.time}</div>
+                </div>
+            `).join('');
+        }
+    } else {
+        const recentContainer = $('recent-actions-list');
+        if (recentContainer) {
+            recentContainer.innerHTML = '<div style="padding: 20px; text-align: center; color: rgba(255,255,255,0.5);">No recent actions logged yet</div>';
         }
     }
 }
@@ -1130,6 +1178,38 @@ async function init() {
     setInterval(fetchActions, 30000);         // 30s - AI actions
 
     console.log('📊 All systems online. Animated counters enabled.');
+    
+    // Initialize AI Actions detail panel
+    initActionsDetailPanel();
+}
+
+// ========== AI ACTIONS DETAIL PANEL ==========
+function initActionsDetailPanel() {
+    const card = $('ai-actions-card');
+    const panel = $('actions-detail-panel');
+    const closeBtn = $('close-actions-panel');
+    
+    if (card && panel) {
+        card.addEventListener('click', () => {
+            // Toggle panel visibility
+            if (panel.style.display === 'none' || !panel.style.display) {
+                panel.style.display = 'block';
+                // Scroll to panel smoothly
+                setTimeout(() => {
+                    panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }, 100);
+            } else {
+                panel.style.display = 'none';
+            }
+        });
+    }
+    
+    if (closeBtn && panel) {
+        closeBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            panel.style.display = 'none';
+        });
+    }
 }
 
 init();
