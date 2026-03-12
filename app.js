@@ -781,9 +781,14 @@ function drawSparkline(canvasId, data, options = {}) {
 }
 
 function initCharts() {
-    // Keep sparklines for channel cards
-    drawSparkline('spark-theo', [50, 80, 120, 200, 350, 500, 600, 942], { color: 'rgb(99, 102, 241)', min: 0 });
-    drawSparkline('spark-opendyl', [10, 25, 45, 60, 75, 85], { color: 'rgb(34, 211, 238)', min: 0 });
+    // Stock market style growth charts for each channel
+    // Theoretika: steady subscriber growth, viral view spikes
+    drawSparkline('spark-theo-subs', [45, 52, 68, 102, 185, 320, 580, 942], { color: 'rgb(99, 102, 241)', min: 0 });
+    drawSparkline('spark-theo-views', [1200, 1850, 2400, 3100, 5800, 7200, 8100, 8634], { color: 'rgb(167, 139, 250)', min: 0 });
+    
+    // OpenDyl: early stage growth
+    drawSparkline('spark-opendyl-subs', [3, 4, 5, 6, 7, 8], { color: 'rgb(34, 211, 238)', min: 0 });
+    drawSparkline('spark-opendyl-views', [150, 210, 280, 420, 550, 686], { color: 'rgb(96, 165, 250)', min: 0 });
 
     // Initialize P&L Charts with Chart.js
     setTimeout(initPnLCharts, 300);

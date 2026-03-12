@@ -665,6 +665,30 @@ body {
     margin-bottom: 16px;
 }
 
+.sparkline-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 16px;
+}
+
+.sparkline-container {
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 8px;
+    padding: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.sparkline-label {
+    font-size: 11px;
+    color: var(--text-muted);
+    text-align: center;
+    margin-top: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 500;
+}
+
 /* ---- Kalshi Card ---- */
 .kalshi-card .kalshi-stats {
     display: grid;
