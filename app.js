@@ -678,7 +678,7 @@ async function fetchROI() {
 }
 
 async function fetchActions() {
-    const data = await smartFetch('/api/actions', null);
+    const data = await smartFetch('/api/actions', 'actions-data.json');
     if (!data) return;
     
     // Store data globally for detail panel
