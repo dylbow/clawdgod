@@ -226,6 +226,12 @@ async function fetchYouTube() {
         el.textContent = totalSubs;
     }
 
+    // Project tile — YouTube (live data)
+    const pys = $('proj-yt-subs');
+    if (pys) pys.textContent = totalSubs;
+    const pyv = $('proj-yt-views');
+    if (pyv) pyv.textContent = fmtK(totalViews);
+
     // Channels page — Theoretika
     if (data.theoretika) {
         const ts = $('ch-theo-subs');
@@ -358,6 +364,18 @@ async function fetchKalshi() {
         ht.dataset.animated = 'true';
     } else if (ht) {
         ht.textContent = openTrades;
+    }
+
+    // Project tile — Trading (live data)
+    const ptb = $('proj-tr-balance');
+    if (ptb) ptb.textContent = '$' + total.toFixed(2);
+    const ptt = $('proj-tr-trades');
+    if (ptt) ptt.textContent = openTrades;
+    const ptp = $('proj-tr-pnl');
+    if (ptp) {
+        const pnlSign = pnl >= 0 ? '+' : '';
+        ptp.textContent = pnlSign + '$' + pnl.toFixed(2);
+        ptp.style.color = pnl >= 0 ? '#4ade80' : '#f87171';
     }
 
     // Finances page — with animation
