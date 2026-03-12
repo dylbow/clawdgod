@@ -769,19 +769,13 @@ function initHealthActions() {
         healthBtn.addEventListener('click', async () => {
             healthBtn.classList.add('loading');
             
-            // Try local gateway first (works when running locally)
+            // Call the file-based health endpoint (works from anywhere)
             let data = null;
             try {
-                const res = await fetch('http://127.0.0.1:18789/api/status', { signal: AbortSignal.timeout(3000) });
+                const res = await fetch('/api/health', { signal: AbortSignal.timeout(5000) });
                 if (res.ok) data = await res.json();
-            } catch(e) {}
-            
-            // Try Vercel API as fallback
-            if (!data) {
-                try {
-                    const res = await fetch('/api/health', { signal: AbortSignal.timeout(5000) });
-                    if (res.ok) data = await res.json();
-                } catch(e) {}
+            } catch(e) {
+                console.error('Health check failed:', e);
             }
             
             healthBtn.classList.remove('loading');
@@ -790,11 +784,10 @@ function initHealthActions() {
                 panel.style.display = 'block';
                 
                 if (data && !data.error) {
-                    const session = data.session || data;
-                    const ctx = session.context || {};
+                    const ctx = data.context || {};
                     const used = ctx.used || 0;
                     const max = ctx.max || 200000;
-                    const pct = Math.round((used / max) * 100);
+                    const pct = ctx.percent || 0;
                     
                     const bar = $('health-context-bar');
                     if (bar) {
@@ -806,16 +799,16 @@ function initHealthActions() {
                     if (ctxEl) ctxEl.textContent = Math.round(used/1000) + 'k / ' + Math.round(max/1000) + 'k (' + pct + '%)';
                     
                     const tokEl = $('health-tokens');
-                    if (tokEl) tokEl.textContent = (session.tokensIn || 0) + ' in / ' + (session.tokensOut || 0) + ' out';
+                    if (tokEl) tokEl.textContent = data.tokens.input + ' in / ' + data.tokens.output + ' out';
                     
                     const modEl = $('health-model');
-                    if (modEl) modEl.textContent = session.model || 'unknown';
+                    if (modEl) modEl.textContent = data.model || 'unknown';
                     
                     const ageEl = $('health-age');
-                    if (ageEl) ageEl.textContent = session.uptime || session.age || 'unknown';
+                    if (ageEl) ageEl.textContent = data.sessionAge || 'unknown';
                     
                     const compEl = $('health-compactions');
-                    if (compEl) compEl.textContent = session.compactions || '0';
+                    if (compEl) compEl.textContent = data.compactions || '0';
                     
                     const statusEl = $('health-status');
                     if (statusEl) {
@@ -832,43 +825,57 @@ function initHealthActions() {
                     }
                     
                     const tsEl = $('health-timestamp');
-                    if (tsEl) tsEl.textContent = 'Checked: ' + new Date().toLocaleTimeString();
+                    if (tsEl) {
+                        const updateTime = new Date(data.timestamp);
+                        const freshness = data.freshness ? ` (${data.freshness.status})` : '';
+                        tsEl.textContent = 'Last update: ' + updateTime.toLocaleTimeString() + freshness;
+                    }
                 } else {
-                    // Can't reach gateway — show message
+                    // Error or data not available
                     const statusEl = $('health-status');
                     if (statusEl) {
-                        statusEl.textContent = '🔌 Gateway unreachable (runs locally)';
+                        statusEl.textContent = data?.hint || '⚠️ Health data not available';
                         statusEl.style.color = '#fbbf24';
                     }
                     const tsEl = $('health-timestamp');
-                    if (tsEl) tsEl.textContent = 'Gateway runs on local machine only';
+                    if (tsEl) tsEl.textContent = 'Waiting for first update...';
                 }
             }
         });
     }
     
     if (compactBtn) {
-        compactBtn.addEventListener('click', () => {
+        compactBtn.addEventListener('click', async () => {
             compactBtn.classList.add('loading');
-            compactBtn.querySelector('.action-label').textContent = 'Compacting...';
-            // Try to trigger compact via gateway
-            fetch('http://127.0.0.1:18789/api/compact', { method: 'POST', signal: AbortSignal.timeout(5000) })
-                .then(() => {
+            compactBtn.querySelector('.action-label').textContent = 'Requesting...';
+            
+            try {
+                const res = await fetch('/api/compact', { 
+                    method: 'POST',
+                    signal: AbortSignal.timeout(5000) 
+                });
+                
+                if (res.ok) {
+                    const result = await res.json();
                     compactBtn.classList.remove('loading');
                     compactBtn.classList.add('success');
-                    compactBtn.querySelector('.action-label').textContent = '✓ Compacted';
+                    compactBtn.querySelector('.action-label').textContent = '✓ Queued';
+                    
+                    // Show hint about waiting for heartbeat
                     setTimeout(() => {
                         compactBtn.classList.remove('success');
                         compactBtn.querySelector('.action-label').textContent = 'Compact / Refresh';
-                    }, 3000);
-                })
-                .catch(() => {
-                    compactBtn.classList.remove('loading');
-                    compactBtn.querySelector('.action-label').textContent = 'Send /compact in chat';
-                    setTimeout(() => {
-                        compactBtn.querySelector('.action-label').textContent = 'Compact / Refresh';
-                    }, 3000);
-                });
+                    }, 4000);
+                } else {
+                    throw new Error('Request failed');
+                }
+            } catch(e) {
+                compactBtn.classList.remove('loading');
+                compactBtn.querySelector('.action-label').textContent = '❌ Failed';
+                setTimeout(() => {
+                    compactBtn.querySelector('.action-label').textContent = 'Compact / Refresh';
+                }, 3000);
+            }
         });
     }
 }

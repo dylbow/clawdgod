@@ -1,0 +1,16 @@
+{
+  "timestamp": "2026-03-12T23:18:43Z",
+  "context": {
+    "used": 200000,
+    "max": 200000,
+    "percent": 100
+  },
+  "model": "claude-opus-4-6",
+  "tokens": {
+    "input": 4,
+    "output": 678
+  },
+  "sessionAge": "1m",
+  "compactions": 0,
+  "status": "healthy"
+}

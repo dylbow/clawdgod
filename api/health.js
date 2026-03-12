@@ -1,33 +1,40 @@
-const https = require('https');
-const http = require('http');
+const fs = require('fs');
+const path = require('path');
 
 module.exports = async (req, res) => {
   res.setHeader('Cache-Control', 's-maxage=10');
   
-  // Try to reach the OpenClaw gateway status endpoint
   try {
-    const data = await new Promise((resolve, reject) => {
-      const request = http.get('http://127.0.0.1:18789/api/status', { 
-        timeout: 3000 
-      }, (response) => {
-        let body = '';
-        response.on('data', c => body += c);
-        response.on('end', () => {
-          try { resolve(JSON.parse(body)); } catch(e) { reject(e); }
-        });
+    // Read health data from the JSON file (updated by cron/heartbeat)
+    const healthFilePath = path.join(__dirname, 'health-data.json');
+    
+    if (!fs.existsSync(healthFilePath)) {
+      return res.json({
+        error: 'Health data not available yet',
+        hint: 'Waiting for first health update from agent',
+        status: 'pending'
       });
-      request.on('error', reject);
-      request.on('timeout', () => { request.destroy(); reject(new Error('timeout')); });
-    });
+    }
+    
+    const data = JSON.parse(fs.readFileSync(healthFilePath, 'utf8'));
+    
+    // Calculate data freshness
+    const timestamp = new Date(data.timestamp);
+    const ageMs = Date.now() - timestamp.getTime();
+    const ageMin = Math.round(ageMs / 60000);
+    
+    // Add freshness indicator
+    data.freshness = {
+      ageMinutes: ageMin,
+      status: ageMin < 10 ? 'fresh' : ageMin < 30 ? 'recent' : 'stale'
+    };
     
     res.json(data);
   } catch(e) {
-    // Fallback — gateway not reachable from Vercel (expected)
-    // Return a status that tells the frontend to check locally
-    res.json({
-      error: 'Gateway not reachable from Vercel (runs locally)',
-      hint: 'Health check works when dashboard is served locally',
-      status: 'remote'
+    res.status(500).json({
+      error: 'Failed to read health data',
+      message: e.message,
+      status: 'error'
     });
   }
 };
