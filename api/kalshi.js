@@ -34,14 +34,14 @@ function kalshiRequest(path) {
   });
 }
 
-// Fallback data when no private key configured (updated 2026-03-12 12:00 AM)
+// Fallback data when no private key configured (updated 2026-03-12 6:00 AM)
 const FALLBACK = {
   balance: 6.83,
-  portfolio_value: 3.19,
-  total_value: 10.02,
+  portfolio_value: 3.25,
+  total_value: 10.08,
   total_pnl: -20.89,
   positions: [
-    { ticker: 'KXOAIANTH-40-OAI', position: 2, exposure: 3.19, result: '' }
+    { ticker: 'KXOAIANTH-40-OAI', position: 2, exposure: 3.25, result: '' }
   ]
 };
 
