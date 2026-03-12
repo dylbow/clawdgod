@@ -20,14 +20,14 @@ function animateCounter(element, target, duration = 1000, suffix = '') {
         const elapsed = Date.now() - startTime;
         const progress = Math.min(elapsed / duration, 1);
         const eased = 1 - Math.pow(1 - progress, 3); // easeOutCubic
-        const current = Math.floor(start + range * eased);
+        const current = start + range * eased;
         
         if (suffix === '$') {
             element.textContent = '$' + current.toFixed(2);
         } else if (suffix === 'K') {
-            element.textContent = fmtK(current);
+            element.textContent = fmtK(Math.floor(current));
         } else {
-            element.textContent = current + suffix;
+            element.textContent = Math.floor(current) + suffix;
         }
         
         if (progress < 1) {
@@ -236,10 +236,41 @@ async function fetchYouTube() {
             ts.textContent = data.theoretika.subscribers;
         }
         
-        const tv = $('ch-theo-views'); 
-        if (tv) tv.textContent = fmtK(data.theoretika.views || 0);
-        const th = $('ch-theo-hours'); 
-        if (th) th.textContent = (data.theoretika.watchHours || 0).toFixed(1);
+        const tv = $('ch-theo-views');
+        if (tv && !tv.dataset.animated) {
+            animateCounter(tv, data.theoretika.views || 0, 1200, 'K');
+            tv.dataset.animated = 'true';
+        } else if (tv) {
+            tv.textContent = fmtK(data.theoretika.views || 0);
+        }
+        
+        const th = $('ch-theo-hours');
+        if (th && !th.dataset.animated) {
+            const hours = data.theoretika.watchHours || 0;
+            // Custom animation for decimal hours
+            const start = 0;
+            const duration = 1200;
+            const startTime = Date.now();
+            
+            function updateHours() {
+                const elapsed = Date.now() - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                const eased = 1 - Math.pow(1 - progress, 3);
+                const current = start + (hours - start) * eased;
+                th.textContent = current.toFixed(1);
+                
+                if (progress < 1) {
+                    requestAnimationFrame(updateHours);
+                } else {
+                    th.textContent = hours.toFixed(1);
+                }
+            }
+            updateHours();
+            th.dataset.animated = 'true';
+        } else if (th) {
+            th.textContent = (data.theoretika.watchHours || 0).toFixed(1);
+        }
+        
         const tr = $('ch-theo-rev'); 
         if (tr) tr.textContent = '$0';
     }
@@ -255,9 +286,39 @@ async function fetchYouTube() {
         }
         
         const ov = $('ch-opendyl-views');
-        if (ov) ov.textContent = fmtK(data.opendyl.views || 0);
+        if (ov && !ov.dataset.animated) {
+            animateCounter(ov, data.opendyl.views || 0, 1200, 'K');
+            ov.dataset.animated = 'true';
+        } else if (ov) {
+            ov.textContent = fmtK(data.opendyl.views || 0);
+        }
+        
         const oh = $('ch-opendyl-hours');
-        if (oh) oh.textContent = (data.opendyl.watchHours || 0).toFixed(1);
+        if (oh && !oh.dataset.animated) {
+            const hours = data.opendyl.watchHours || 0;
+            const start = 0;
+            const duration = 1200;
+            const startTime = Date.now();
+            
+            function updateHours() {
+                const elapsed = Date.now() - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                const eased = 1 - Math.pow(1 - progress, 3);
+                const current = start + (hours - start) * eased;
+                oh.textContent = current.toFixed(1);
+                
+                if (progress < 1) {
+                    requestAnimationFrame(updateHours);
+                } else {
+                    oh.textContent = hours.toFixed(1);
+                }
+            }
+            updateHours();
+            oh.dataset.animated = 'true';
+        } else if (oh) {
+            oh.textContent = (data.opendyl.watchHours || 0).toFixed(1);
+        }
+        
         const orev = $('ch-opendyl-rev');
         if (orev) orev.textContent = '$0';
     }
@@ -272,7 +333,12 @@ async function fetchYouTube() {
     }
     
     const cv = $('ch-total-views');
-    if (cv) cv.textContent = fmtK(totalViews);
+    if (cv && !cv.dataset.animated) {
+        animateCounter(cv, totalViews, 1500, 'K');
+        cv.dataset.animated = 'true';
+    } else if (cv) {
+        cv.textContent = fmtK(totalViews);
+    }
 }
 
 async function fetchKalshi() {
@@ -294,23 +360,78 @@ async function fetchKalshi() {
         ht.textContent = openTrades;
     }
 
-    // Channels page
-    const kb = $('k-balance'); if (kb) kb.textContent = fmt(bal);
-    const kp = $('k-portfolio'); if (kp) kp.textContent = fmt(port);
-    const kt = $('k-total'); if (kt) kt.textContent = fmt(total);
+    // Finances page — with animation
+    const kb = $('k-balance');
+    if (kb && !kb.dataset.animated) {
+        animateCounter(kb, bal, 1200, '$');
+        kb.dataset.animated = 'true';
+    } else if (kb) {
+        kb.textContent = fmt(bal);
+    }
+    
+    const kp = $('k-portfolio');
+    if (kp && !kp.dataset.animated) {
+        animateCounter(kp, port, 1200, '$');
+        kp.dataset.animated = 'true';
+    } else if (kp) {
+        kp.textContent = fmt(port);
+    }
+    
+    const kt = $('k-total');
+    if (kt && !kt.dataset.animated) {
+        animateCounter(kt, total, 1200, '$');
+        kt.dataset.animated = 'true';
+    } else if (kt) {
+        kt.textContent = fmt(total);
+    }
+    
     const kpnl = $('k-pnl');
     if (kpnl) {
-        kpnl.textContent = (pnl >= 0 ? '+' : '') + fmt(pnl);
-        kpnl.style.color = pnl >= 0 ? 'var(--green)' : 'var(--red)';
+        const isPositive = pnl >= 0;
+        
+        if (!kpnl.dataset.animated) {
+            const el = document.createElement('span');
+            kpnl.innerHTML = '';
+            kpnl.appendChild(document.createTextNode(isPositive ? '+' : ''));
+            kpnl.appendChild(el);
+            animateCounter(el, Math.abs(pnl), 1200, '$');
+            kpnl.dataset.animated = 'true';
+        } else {
+            kpnl.textContent = (isPositive ? '+' : '') + fmt(pnl);
+        }
+        
+        kpnl.style.color = isPositive ? 'var(--green)' : 'var(--red)';
     }
 
-    // Win/Loss stats
+    // Win/Loss stats — with animation
     const positions = data.positions || [];
     const won = positions.filter(p => p.result === 'yes').length;
     const lost = positions.filter(p => p.result === 'no').length;
     const open = positions.filter(p => !p.result).length;
     const kStats = $('k-stats');
-    if (kStats) {
+    if (kStats && !kStats.dataset.animated) {
+        // Create elements for animation
+        const wonSpan = document.createElement('span');
+        wonSpan.className = 'stat-won';
+        const lostSpan = document.createElement('span');
+        lostSpan.className = 'stat-lost';
+        const openSpan = document.createElement('span');
+        openSpan.className = 'stat-open';
+        
+        kStats.innerHTML = '';
+        kStats.appendChild(wonSpan);
+        kStats.appendChild(document.createTextNode(' · '));
+        kStats.appendChild(lostSpan);
+        kStats.appendChild(document.createTextNode(' · '));
+        kStats.appendChild(openSpan);
+        
+        // Animate each stat
+        animateCounter(wonSpan, won, 1000, ' Won');
+        setTimeout(() => animateCounter(lostSpan, lost, 1000, ' Lost'), 200);
+        setTimeout(() => animateCounter(openSpan, open, 1000, ' Open'), 400);
+        
+        kStats.dataset.animated = 'true';
+    } else if (kStats) {
         kStats.innerHTML = `<span class="stat-won">${won} Won</span> · <span class="stat-lost">${lost} Lost</span> · <span class="stat-open">${open} Open</span>`;
     }
 
@@ -423,22 +544,70 @@ async function fetchROI() {
         data = { totalCosts, totalRevenue, costBreakdown };
     }
 
-    // Home revenue
+    // Home revenue — with animation
     const hr = $('home-revenue');
-    if (hr) hr.textContent = fmt(data.totalRevenue);
+    if (hr && !hr.dataset.animated) {
+        const val = data.totalRevenue;
+        animateCounter(hr, val, 1500, '$');
+        hr.dataset.animated = 'true';
+    } else if (hr) {
+        hr.textContent = fmt(data.totalRevenue);
+    }
+    
     const cr = $('ch-total-rev');
-    if (cr) cr.textContent = fmt(data.totalRevenue);
+    if (cr && !cr.dataset.animated) {
+        const val = data.totalRevenue;
+        animateCounter(cr, val, 1500, '$');
+        cr.dataset.animated = 'true';
+    } else if (cr) {
+        cr.textContent = fmt(data.totalRevenue);
+    }
 
-    // Finance page
-    const fc = $('fin-costs'); if (fc) fc.textContent = '-' + fmt(data.totalCosts);
-    const fr = $('fin-revenue'); if (fr) fr.textContent = '+' + fmt(data.totalRevenue);
+    // Finance page — with animation
+    const fc = $('fin-costs');
+    if (fc && !fc.dataset.animated) {
+        // Animate counter, then add minus sign
+        const el = document.createElement('span');
+        fc.innerHTML = '';
+        fc.appendChild(document.createTextNode('-'));
+        fc.appendChild(el);
+        animateCounter(el, data.totalCosts, 1200, '$');
+        fc.dataset.animated = 'true';
+    } else if (fc) {
+        fc.textContent = '-' + fmt(data.totalCosts);
+    }
+    
+    const fr = $('fin-revenue');
+    if (fr && !fr.dataset.animated) {
+        const el = document.createElement('span');
+        fr.innerHTML = '';
+        fr.appendChild(document.createTextNode('+'));
+        fr.appendChild(el);
+        animateCounter(el, data.totalRevenue, 1200, '$');
+        fr.dataset.animated = 'true';
+    } else if (fr) {
+        fr.textContent = '+' + fmt(data.totalRevenue);
+    }
+    
     const fn = $('fin-net');
     const fnl = $('fin-net-label');
     if (fn) {
         const net = data.totalRevenue - data.totalCosts;
-        fn.textContent = (net >= 0 ? '+' : '') + fmt(net);
-        fn.classList.add(net >= 0 ? 'green' : 'red');
-        if (fnl) fnl.textContent = net >= 0 ? '🟢 Profit' : '🔴 To break even';
+        const isPositive = net >= 0;
+        
+        if (!fn.dataset.animated) {
+            const el = document.createElement('span');
+            fn.innerHTML = '';
+            fn.appendChild(document.createTextNode(isPositive ? '+' : ''));
+            fn.appendChild(el);
+            animateCounter(el, Math.abs(net), 1200, '$');
+            fn.dataset.animated = 'true';
+        } else {
+            fn.textContent = (isPositive ? '+' : '') + fmt(net);
+        }
+        
+        fn.classList.add(isPositive ? 'green' : 'red');
+        if (fnl) fnl.textContent = isPositive ? '🟢 Profit' : '🔴 To break even';
     }
 
     // Progress bar
@@ -448,19 +617,45 @@ async function fetchROI() {
     const bpct = $('fin-bar-pct');
     if (bpct) bpct.textContent = pct.toFixed(0) + '%';
 
-    // Expense categories
+    // Expense categories — with animation
     const catEl = $('fin-categories');
     if (catEl && data.costBreakdown) {
         const icons = { Hardware: '🖥️', Subscriptions: '🔄', 'Api credits': '⚡', Other: '📦' };
         const colors = { Hardware: 'var(--blue)', Subscriptions: 'var(--purple)', 'Api credits': 'var(--orange)', Other: 'var(--text-muted)' };
-        catEl.innerHTML = Object.entries(data.costBreakdown).map(([cat, info]) => `
-            <div class="expense-card">
-                <div class="expense-icon">${icons[cat] || '📦'}</div>
-                <div class="expense-name">${cat}</div>
-                <div class="expense-amount" style="color:${colors[cat] || 'var(--text-primary)'}">${fmt(info.total)}</div>
-                <div class="expense-detail">${info.items?.length || 0} items</div>
-            </div>
-        `).join('');
+        
+        if (!catEl.dataset.animated) {
+            catEl.innerHTML = '';
+            let delay = 0;
+            
+            Object.entries(data.costBreakdown).forEach(([cat, info]) => {
+                const card = document.createElement('div');
+                card.className = 'expense-card';
+                card.innerHTML = `
+                    <div class="expense-icon">${icons[cat] || '📦'}</div>
+                    <div class="expense-name">${cat}</div>
+                    <div class="expense-amount" style="color:${colors[cat] || 'var(--text-primary)'}"></div>
+                    <div class="expense-detail">${info.items?.length || 0} items</div>
+                `;
+                catEl.appendChild(card);
+                
+                const amountEl = card.querySelector('.expense-amount');
+                setTimeout(() => {
+                    animateCounter(amountEl, info.total, 1000, '$');
+                }, delay);
+                delay += 150;
+            });
+            
+            catEl.dataset.animated = 'true';
+        } else {
+            catEl.innerHTML = Object.entries(data.costBreakdown).map(([cat, info]) => `
+                <div class="expense-card">
+                    <div class="expense-icon">${icons[cat] || '📦'}</div>
+                    <div class="expense-name">${cat}</div>
+                    <div class="expense-amount" style="color:${colors[cat] || 'var(--text-primary)'}">${fmt(info.total)}</div>
+                    <div class="expense-detail">${info.items?.length || 0} items</div>
+                </div>
+            `).join('');
+        }
     }
 }
 
