@@ -588,7 +588,6 @@ function initCharts() {
     // Keep sparklines for channel cards
     drawSparkline('spark-theo', [50, 80, 120, 200, 350, 500, 600, 942], { color: 'rgb(99, 102, 241)', min: 0 });
     drawSparkline('spark-opendyl', [10, 25, 45, 60, 75, 85], { color: 'rgb(34, 211, 238)', min: 0 });
-    drawSparkline('spark-kalshi', [0, -0.82, -0.60, -0.40, 0.10, 0.51], { color: 'rgb(52, 211, 153)', min: -1 });
 
     // Initialize P&L Charts with Chart.js
     setTimeout(initPnLCharts, 300);
