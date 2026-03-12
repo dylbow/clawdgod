@@ -59,27 +59,38 @@ module.exports = async (req, res) => {
     ]);
     
     const balance = balanceData.balance ? balanceData.balance / 100 : FALLBACK.balance;
-    const portfolio = positionsData.market_positions || [];
+    
+    // Kalshi returns event_positions (not market_positions)
+    const portfolio = positionsData.event_positions || positionsData.market_positions || [];
     
     let portfolioValue = 0;
-    const positions = portfolio.filter(p => p.total_traded > 0).map(p => {
-      const pos = p.position || 0;
-      const price = p.market_exposure ? (p.market_exposure / pos / 100) : 0;
-      portfolioValue += (p.market_exposure || 0) / 100;
+    let totalPnl = 0;
+    const positions = portfolio.map(p => {
+      const exposure = parseFloat(p.event_exposure_dollars || p.market_exposure || 0);
+      const cost = parseFloat(p.total_cost_dollars || 0);
+      const realizedPnl = parseFloat(p.realized_pnl_dollars || 0);
+      const shares = parseFloat(p.total_cost_shares_fp || p.position || 0);
+      portfolioValue += exposure;
+      totalPnl += realizedPnl;
       return {
-        ticker: p.ticker,
-        position: pos,
-        yes_price: Math.round(price * 100),
-        exposure: (p.market_exposure || 0) / 100,
-        result: p.settlement_status === 'settled' ? (p.realized_pnl > 0 ? 'yes' : 'no') : ''
+        ticker: p.event_ticker || p.ticker,
+        position: Math.round(shares),
+        exposure: exposure,
+        cost: cost,
+        realized_pnl: realizedPnl,
+        result: p.settlement_status === 'settled' ? (realizedPnl > 0 ? 'yes' : 'no') : ''
       };
     });
+    
+    // Calculate total P&L: current value - total invested
+    const totalInvested = 30.83; // $20 + $11 deposits
+    const netPnl = (balance + portfolioValue) - totalInvested;
     
     res.json({
       balance,
       portfolio_value: portfolioValue,
       total_value: balance + portfolioValue,
-      total_pnl: (balanceData.pnl || 0) / 100,
+      total_pnl: netPnl,
       positions
     });
   } catch(e) {
