@@ -690,17 +690,29 @@ async function fetchActions() {
         counter.textContent = data.count;
     }
     
-    // Update activity feed with recent actions
-    if (data.recent && data.recent.length > 0) {
+    // Update activity feed with action breakdown
+    if (data.breakdown && data.breakdown.length > 0) {
         const container = $('home-feed');
         if (container && container.children.length === 0) {
-            container.innerHTML = data.recent.map(item => `
+            // Map action types to emojis
+            const iconMap = {
+                'memory_logs': '📝',
+                'sessions': '🔄',
+                'git_commits': '📦',
+                'kalshi_trades': '📈',
+                'cron_jobs': '⏰',
+                'content_generation': '🎨',
+                'messages': '📧'
+            };
+            
+            container.innerHTML = data.breakdown.map(item => `
                 <div class="feed-item">
-                    <span class="feed-icon">⚡</span>
+                    <span class="feed-icon">${iconMap[item.type] || '⚡'}</span>
                     <div class="feed-body">
-                        <div class="feed-action">${item.action}</div>
+                        <div class="feed-action">${item.description}</div>
+                        <div class="feed-meta">${item.type.replace(/_/g, ' ')}</div>
                     </div>
-                    <span class="feed-time">${item.time}</span>
+                    <span class="feed-time">${item.count}×</span>
                 </div>
             `).join('');
         }

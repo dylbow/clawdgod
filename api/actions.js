@@ -1,87 +1,52 @@
 const fs = require('fs');
 const path = require('path');
 
-// Track Dylbot's daily actions
-function getActionsToday() {
-  const memoryPath = process.env.MEMORY_ROOT || '/Users/dylbot/.openclaw/workspace/memory';
-  const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
-  const todayFile = path.join(memoryPath, `${today}.md`);
-  
-  let actionCount = 0;
-  const recentActions = [];
-  
-  try {
-    if (fs.existsSync(todayFile)) {
-      const content = fs.readFileSync(todayFile, 'utf8');
-      
-      // Count action indicators
-      const actionPatterns = [
-        /\[TRADE\]/gi,
-        /\[VIDEO\]/gi,
-        /\[IMAGE\]/gi,
-        /\[CONTENT\]/gi,
-        /\[SYSTEM\]/gi,
-        /\[SCAN\]/gi,
-        /generated/gi,
-        /uploaded/gi,
-        /placed.*trade/gi,
-        /sent.*message/gi,
-        /created/gi,
-        /updated/gi
-      ];
-      
-      actionPatterns.forEach(pattern => {
-        const matches = content.match(pattern) || [];
-        actionCount += matches.length;
-      });
-      
-      // Extract recent actions (last 10 lines with timestamps)
-      const lines = content.split('\n').filter(l => l.trim());
-      const actionLines = lines
-        .filter(l => /\d{2}:\d{2}/.test(l)) // Has timestamp
-        .slice(-10)
-        .reverse();
-      
-      actionLines.forEach(line => {
-        const timeMatch = line.match(/(\d{2}:\d{2})/);
-        if (timeMatch) {
-          const action = line.replace(/^\**\d{2}:\d{2}:\d{2}\**\s*[-–—]\s*/, '').substring(0, 100);
-          recentActions.push({
-            time: timeMatch[1],
-            action: action
-          });
-        }
-      });
-    }
-  } catch(e) {
-    console.error('Error reading memory file:', e.message);
-  }
-  
-  // Fallback if no data
-  if (actionCount === 0) {
-    actionCount = 12;
-    recentActions.push(
-      { time: '14:15', action: 'Dashboard improvements deployed' },
-      { time: '10:36', action: 'Kalshi weather scan — 2 trades placed' },
-      { time: '09:48', action: 'Thumbnail generated for Ancient Aliens video' },
-      { time: '09:00', action: 'Glass Rain Planet short uploaded to Drive' }
-    );
-  }
-  
-  return {
-    count: actionCount,
-    recent: recentActions,
-    date: today
-  };
-}
-
+// Track Dylbot's daily actions - reads from pre-generated JSON
 module.exports = (req, res) => {
   res.setHeader('Cache-Control', 's-maxage=30'); // 30s cache
   
   try {
-    const data = getActionsToday();
-    res.json(data);
+    // Read pre-generated actions data
+    const dataPath = path.join(__dirname, 'actions-data.json');
+    
+    if (fs.existsSync(dataPath)) {
+      const rawData = fs.readFileSync(dataPath, 'utf8');
+      const data = JSON.parse(rawData);
+      
+      // Add recent actions summary from breakdown
+      const recentActions = [];
+      if (data.breakdown && Array.isArray(data.breakdown)) {
+        data.breakdown.forEach(item => {
+          if (item.count > 0) {
+            recentActions.push({
+              type: item.type,
+              count: item.count,
+              description: item.description
+            });
+          }
+        });
+      }
+      
+      // Return full data with recent actions
+      res.json({
+        count: data.count || 0,
+        date: data.date,
+        updated: data.updated,
+        breakdown: data.breakdown || [],
+        recent: recentActions
+      });
+    } else {
+      // Fallback if file doesn't exist yet
+      res.json({
+        count: 0,
+        date: new Date().toISOString().split('T')[0],
+        updated: new Date().toISOString(),
+        breakdown: [],
+        recent: []
+      });
+    }
   } catch(e) {
+    console.error('Error reading actions data:', e.message);
     res.status(500).json({ error: e.message });
   }
 };
