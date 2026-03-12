@@ -199,6 +199,7 @@ async function fetchContentPipeline() {
             <div class="kanban-card-item">
                 <div class="kanban-card-type">${c.type === 'long-form' ? '📹 Long-form' : '⚡ Short'}</div>
                 <div class="kanban-card-title">${c.title}</div>
+                ${c.progress ? `<div class="kanban-card-progress">Progress: ${c.progress}</div>` : ''}
                 ${c.note ? `<div class="kanban-card-note">${c.note}</div>` : ''}
                 ${c.channel ? `<div class="kanban-card-channel">${c.channel}</div>` : ''}
             </div>

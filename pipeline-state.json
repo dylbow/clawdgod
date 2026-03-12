@@ -1,0 +1,48 @@
+{
+  "gravity-doubled": {
+    "title": "Gravity Doubled",
+    "stage": "video-upload",
+    "stages_complete": [
+      "voiceover",
+      "images",
+      "video-creation",
+      "video-upload"
+    ],
+    "last_updated": "2026-03-10T20:02:00Z",
+    "type": "short",
+    "channel": "Theoretika",
+    "notes": "Published to YouTube"
+  },
+  "mars-colony": {
+    "title": "Mars Colony",
+    "stage": "voiceover",
+    "stages_complete": [],
+    "last_updated": "2026-03-12T21:57:41.897Z",
+    "type": "short",
+    "channel": "Theoretika",
+    "notes": ""
+  },
+  "black-holes": {
+    "title": "Black Holes Explained",
+    "stage": "images",
+    "stages_complete": [
+      "voiceover"
+    ],
+    "last_updated": "2026-03-12T21:57:41.995Z",
+    "type": "short",
+    "channel": "Theoretika",
+    "notes": ""
+  },
+  "ocean-depths": {
+    "title": "Ocean Depths",
+    "stage": "video-creation",
+    "stages_complete": [
+      "voiceover",
+      "images"
+    ],
+    "last_updated": "2026-03-12T21:57:42.133Z",
+    "type": "short",
+    "channel": "Theoretika",
+    "notes": ""
+  }
+}
