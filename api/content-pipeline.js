@@ -1,9 +1,10 @@
 const fs = require('fs');
 const path = require('path');
+const os = require('os');
 
 // Scan directories for video content stages
 function scanContentPipeline() {
-  const projectsPath = process.env.CONTENT_ROOT || '/Users/dylbot/.openclaw/workspace/projects';
+  const shortsPath = path.join(os.homedir(), 'Desktop/Theoretika/Shorts');
   
   const pipeline = {
     script: [],
@@ -14,62 +15,97 @@ function scanContentPipeline() {
     posted: []
   };
   
-  // Check Theoretika shorts directory
-  const theoretikaPath = path.join(projectsPath, 'theoretika/shorts');
-  
   try {
-    if (fs.existsSync(theoretikaPath)) {
-      const shorts = fs.readdirSync(theoretikaPath, { withFileTypes: true })
-        .filter(d => d.isDirectory())
-        .map(d => d.name);
-      
-      shorts.forEach(shortName => {
-        const shortPath = path.join(theoretikaPath, shortName);
-        const hasScript = fs.existsSync(path.join(shortPath, 'script.md')) || 
-                         fs.existsSync(path.join(shortPath, 'script.txt'));
-        const hasImages = fs.existsSync(path.join(shortPath, 'images'));
-        const hasVoice = fs.existsSync(path.join(shortPath, 'voiceover.mp3')) ||
-                        fs.existsSync(path.join(shortPath, 'voice.mp3'));
-        const hasFinal = fs.existsSync(path.join(shortPath, 'final.mp4')) ||
-                        fs.existsSync(path.join(shortPath, 'output.mp4'));
-        
-        const video = {
-          title: shortName.replace(/-/g, ' ').replace(/^\w/, c => c.toUpperCase()),
-          type: 'short',
-          channel: 'Theoretika'
-        };
-        
-        if (hasFinal) {
-          pipeline.posted.push(video);
-        } else if (hasVoice && hasImages) {
-          pipeline.assembly.push(video);
-        } else if (hasImages) {
-          pipeline.images.push({ ...video, note: 'Images ready' });
-        } else if (hasScript) {
-          pipeline.script.push(video);
-        }
-      });
+    if (!fs.existsSync(shortsPath)) {
+      console.log('Shorts directory not found:', shortsPath);
+      return getFallbackData();
     }
+
+    const files = fs.readdirSync(shortsPath);
+    const projects = {};
+
+    // Group files by project name
+    files.forEach(filename => {
+      const ext = path.extname(filename).toLowerCase();
+      const basename = path.basename(filename, ext);
+      
+      // Extract project name (strip suffixes and numbers)
+      // e.g., "gravity-doubled-final.mp4" → "gravity-doubled"
+      // e.g., "black-holes-1.jpg" → "black-holes"
+      // e.g., "ocean-depths-script.txt" → "ocean-depths"
+      let projectName = basename
+        .replace(/-final$|-script$|-voice$|-voiceover$/, '')  // Remove known suffixes
+        .replace(/-\d+$/, '');  // Remove trailing numbers (e.g., -1, -2, -3)
+      
+      if (!projects[projectName]) {
+        projects[projectName] = {
+          name: projectName,
+          hasScript: false,
+          hasImages: false,
+          hasVoice: false,
+          hasFinal: false,
+          imageCount: 0
+        };
+      }
+
+      // Categorize file type
+      if (['.txt', '.md'].includes(ext)) {
+        projects[projectName].hasScript = true;
+      } else if (['.jpg', '.jpeg', '.png', '.webp', '.gif'].includes(ext)) {
+        projects[projectName].hasImages = true;
+        projects[projectName].imageCount++;
+      } else if (['.mp3', '.wav', '.m4a'].includes(ext)) {
+        projects[projectName].hasVoice = true;
+      } else if (ext === '.mp4') {
+        projects[projectName].hasFinal = true;
+      }
+    });
+
+    // Categorize each project into pipeline stages
+    Object.entries(projects).forEach(([name, data]) => {
+      const video = {
+        title: name.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' '),
+        type: 'short',
+        channel: 'Theoretika'
+      };
+
+      if (data.hasFinal) {
+        pipeline.posted.push({ ...video, note: 'Complete' });
+      } else if (data.hasVoice && data.hasImages) {
+        pipeline.assembly.push({ ...video, note: 'Ready for editing' });
+      } else if (data.hasVoice) {
+        pipeline.voice.push({ ...video, note: 'Need images' });
+      } else if (data.hasImages) {
+        pipeline.images.push({ ...video, note: `${data.imageCount} image${data.imageCount > 1 ? 's' : ''}` });
+      } else if (data.hasScript) {
+        pipeline.script.push({ ...video, note: 'Script ready' });
+      }
+    });
+
   } catch(e) {
     console.error('Error scanning content pipeline:', e.message);
-  }
-  
-  // Fallback/example data if nothing found
-  if (Object.values(pipeline).every(arr => arr.length === 0)) {
-    pipeline.script = [{ title: 'Ocean Depths', type: 'long-form', channel: 'Theoretika' }];
-    pipeline.images = [{ title: 'Life Inside Earth', type: 'long-form', channel: 'Theoretika', note: 'Generating' }];
-    pipeline.review = [
-      { title: 'Ancient Aliens', type: 'long-form', channel: 'Theoretika', note: 'Scheduled Wed 3PM' },
-      { title: 'Glass Rain Planet', type: 'short', channel: 'Theoretika', note: 'On Drive' }
-    ];
-    pipeline.posted = [
-      { title: 'Fermi Paradox', type: 'long-form', channel: 'Theoretika' },
-      { title: 'Mars Colony', type: 'long-form', channel: 'Theoretika' },
-      { title: 'Black Hole Sound', type: 'short', channel: 'Theoretika' }
-    ];
+    return getFallbackData();
   }
   
   return pipeline;
+}
+
+function getFallbackData() {
+  return {
+    script: [{ title: 'Ocean Depths', type: 'long-form', channel: 'Theoretika' }],
+    images: [{ title: 'Life Inside Earth', type: 'long-form', channel: 'Theoretika', note: 'Generating' }],
+    voice: [],
+    assembly: [],
+    review: [
+      { title: 'Ancient Aliens', type: 'long-form', channel: 'Theoretika', note: 'Scheduled Wed 3PM' },
+      { title: 'Glass Rain Planet', type: 'short', channel: 'Theoretika', note: 'On Drive' }
+    ],
+    posted: [
+      { title: 'Fermi Paradox', type: 'long-form', channel: 'Theoretika' },
+      { title: 'Mars Colony', type: 'long-form', channel: 'Theoretika' },
+      { title: 'Black Hole Sound', type: 'short', channel: 'Theoretika' }
+    ]
+  };
 }
 
 module.exports = (req, res) => {

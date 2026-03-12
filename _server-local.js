@@ -325,6 +325,35 @@ async function handleAPI(pathname, res) {
             res.writeHead(200, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' });
             res.end(JSON.stringify(status));
             
+        } else if (pathname === '/api/content-pipeline') {
+            // Load and execute the content-pipeline module
+            try {
+                delete require.cache[require.resolve('./api/content-pipeline.js')]; // Force reload
+                const contentPipelineHandler = require('./api/content-pipeline.js');
+                const mockRes = {
+                    _headers: {},
+                    _statusCode: 200,
+                    setHeader(key, val) { this._headers[key] = val; },
+                    json(data) {
+                        res.writeHead(this._statusCode, { 
+                            'Content-Type': 'application/json', 
+                            'Access-Control-Allow-Origin': '*',
+                            ...this._headers 
+                        });
+                        res.end(JSON.stringify(data));
+                    },
+                    status(code) {
+                        this._statusCode = code;
+                        return this;
+                    }
+                };
+                contentPipelineHandler({}, mockRes); // Pass empty req object
+            } catch(err) {
+                console.error('Content pipeline error:', err);
+                res.writeHead(500, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' });
+                res.end(JSON.stringify({ error: err.message }));
+            }
+            
         } else {
             res.writeHead(404);
             res.end('Not found');
