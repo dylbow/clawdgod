@@ -34,7 +34,7 @@ function kalshiRequest(path) {
   });
 }
 
-// Fallback data when no private key configured (updated 2026-03-13 12:07 AM)
+// Fallback data when no private key configured (updated 2026-03-13 6:01 AM)
 const FALLBACK = {
   balance: 6.83,
   portfolio_value: 3.05,
