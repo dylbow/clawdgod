@@ -66,6 +66,7 @@
                 <div class="stat-card clickable" id="ai-actions-card">
                     <div class="stat-label">AI Actions Today</div>
                     <div class="stat-value orange" id="ai-actions-today">0</div>
+                    <script>fetch('/api/actions').then(r=>r.json()).then(d=>{document.getElementById('ai-actions-today').textContent=d.count}).catch(()=>fetch('actions-data.json').then(r=>r.json()).then(d=>{document.getElementById('ai-actions-today').textContent=d.count}))</script>
                     <div class="stat-delta">automated tasks · click for details</div>
                 </div>
                 <div class="stat-card">
